@@ -9,11 +9,19 @@ public class GameHUD : MonoBehaviour
 {
     public GameController _gameController;
     public TextMeshProUGUI _timeLeft;
+    public TextMeshProUGUI _income;
 
     // Start is called before the first frame update
     void Start()
     {
         _timeLeft.text = FormatTime(_gameController.TimeLeft);
+        _income.text = _gameController.Earnings.ToString();
+        _gameController.OnEarningsChanged += RefreshIncome;
+    }
+
+    void RefreshIncome(int newValue)
+    {
+        _income.text = newValue.ToString();
     }
 
     private string FormatTime(float timeLeft)
