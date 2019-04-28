@@ -19,6 +19,7 @@ public class GameHUD : MonoBehaviour
     public GameController _gameController;
     public TextMeshProUGUI _timeLeft;
     public TextMeshProUGUI _income;
+    public TextMeshProUGUI _fatigue;
 
     public GameObject _endPanel;
     public GameObject _nextRoot;
@@ -32,9 +33,15 @@ public class GameHUD : MonoBehaviour
         _timeLeft.text = FormatTime(_gameController.TimeLeft);
         _income.text = _gameController.Earnings.ToString();
         _gameController.OnEarningsChanged += RefreshIncome;
+        _gameController.OnFatigueChanged += RefreshFatigue;
         _gameController.GameReset += OnReset;
         _gameController.GameFinished += OnFinished ;
         _endPanel.SetActive(false);
+    }
+
+    void RefreshFatigue(int percent)
+    {
+        _fatigue.text = $"{percent}%";
     }
 
     private void OnFinished(Result arg1, int arg2, int arg3)
@@ -62,6 +69,9 @@ public class GameHUD : MonoBehaviour
         {
             _endPanel.SetActive(false);
         }
+        RefreshFatigue(_gameController.FatiguePercent);
+        RefreshTime(_gameController.TimeLeft);
+        RefreshIncome(_gameController.Earnings);
     }
 
     void RefreshIncome(int newValue)
@@ -78,6 +88,11 @@ public class GameHUD : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _timeLeft.text = FormatTime(_gameController.TimeLeft);
+        RefreshTime(_gameController.TimeLeft);
+    }
+
+    void RefreshTime(float timeLeft)
+    {
+        _timeLeft.text = FormatTime(timeLeft);
     }
 }

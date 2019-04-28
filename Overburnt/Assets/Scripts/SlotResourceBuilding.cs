@@ -194,7 +194,7 @@ public class SlotResourceBuilding : MonoBehaviour, IItemGenerator, IPointerClick
         {
             Slot.sortingOrder -= 100;
             _draggingSlot = false;
-            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
+            Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Slot.transform.position = worldPos;
             _gameController.DragItemEnd(this, _itemData, worldPos);
         }

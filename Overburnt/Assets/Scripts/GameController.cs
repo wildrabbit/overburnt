@@ -132,14 +132,21 @@ public class GameController : MonoBehaviour
     public int MinRevenue;
     public int GoodRevenue;
     public int GreatRevenue;
-
     public float RestartTime;
 
+    public float StartFatigue;
+    public float MaxFatigue;
+    public float DragDepletionRate;
+    public float IdleToRestoreTime;
+    public float FatigueRestoreRate;
 
-
+    bool _dragging;
+    float _elapsedSinceLastDragFinished = -1;    
+    float _fatigue;
+    
     Dictionary<ClientSlot, RequestData> _requestAllocations;
 
-    float _elapsed;
+    float _gameTimerElapsed;
     float _requestElapsed;
     int _requestIdx;
     bool _finished;
@@ -148,9 +155,11 @@ public class GameController : MonoBehaviour
     float[] _requestTimes;
     Queue<RequestData> _stalledRequests; // Generated, but no free space
 
-    public float TimeLeft => (GameTime - _elapsed);
+    public float TimeLeft => (GameTime - _gameTimerElapsed);
 
     public int Earnings => _revenue;
+    public float Fatigue => _fatigue;
+    public int FatiguePercent => Mathf.RoundToInt(100 * _fatigue / MaxFatigue);
 
     IItemGenerator _draggedItem;
     Item _itemData;
@@ -160,6 +169,7 @@ public class GameController : MonoBehaviour
     public event Action<int> OnEarningsChanged;
     public event Action GameReset;
     public event Action<Result,int,int> GameFinished;
+    public event Action<int> OnFatigueChanged;
 
     // Start is called before the first frame update
     void Start()
@@ -171,7 +181,7 @@ public class GameController : MonoBehaviour
     private void Reset()
     {
         _result = Result.Running;
-        _elapsed = 0;
+        _gameTimerElapsed = 0;
         _finished = false;
         foreach (var building in ResourceBuildings)
         {
@@ -201,6 +211,10 @@ public class GameController : MonoBehaviour
         }
         _stalledRequests = new Queue<RequestData>();
         GameReset?.Invoke();
+
+        _dragging = false;
+        _fatigue = 0;
+        _elapsedSinceLastDragFinished = -1.0f;
     }
 
     // Update is called once per frame
@@ -209,18 +223,20 @@ public class GameController : MonoBehaviour
         float dt = Time.deltaTime;
         if (_finished)
         {
-            if(Input.anyKey && Time.time - _elapsed > RestartTime)
+            if(Input.anyKey && Time.time - _gameTimerElapsed > RestartTime)
             {
                 Debug.Log("Restart!");
                 Reset();
             }
             return;
         }
-        _elapsed += dt;
+        _gameTimerElapsed += dt;
+        bool exhausted = _result == Result.LostExhaustion;
         int nextRev = 0;
-        if (_elapsed >= GameTime)
+
+        if (_gameTimerElapsed >= GameTime || exhausted)
         {
-            Debug.Log("Timeout!");
+            Debug.Log("Timeout!");           
             if(_revenue < MinRevenue)
             {
                 _result = Result.LostEarnings;
@@ -240,9 +256,15 @@ public class GameController : MonoBehaviour
             {
                 _result = Result.WonGreat;
             }
+
+            if(exhausted)
+            {
+                _result = Result.LostExhaustion; // Override to avoid several ifs above.
+            }
+
             GameFinished?.Invoke(_result, _revenue, nextRev);
             _finished = true;
-            _elapsed = Time.time;
+            _gameTimerElapsed = Time.time;
         }
         else
         {
@@ -264,6 +286,38 @@ public class GameController : MonoBehaviour
                         ClientRequestSlots[slotIdx].InitClient(this, reqData);
                     }
                     _requestIdx++;
+                }
+            }
+
+            if(_dragging)
+            {
+                float fatigueDelta = dt * DragDepletionRate;
+                _fatigue += fatigueDelta;
+                bool exhaustionCheck = _fatigue >= MaxFatigue;
+                if(exhaustionCheck)
+                {
+                    _fatigue = MaxFatigue;
+                    _result = Result.LostExhaustion;
+                }
+                OnFatigueChanged?.Invoke(FatiguePercent);
+                if(exhaustionCheck)
+                {
+                    return;
+                }
+            }
+            else if(_elapsedSinceLastDragFinished >= 0)
+            {
+                _elapsedSinceLastDragFinished += dt;
+                if(_elapsedSinceLastDragFinished > IdleToRestoreTime)
+                {
+                    _elapsedSinceLastDragFinished = IdleToRestoreTime;
+                    _fatigue -= dt * FatigueRestoreRate;
+                    if(_fatigue < 0)
+                    {
+                        _fatigue = 0;
+                        _elapsedSinceLastDragFinished = -1.0f;
+                    }
+                    OnFatigueChanged?.Invoke(FatiguePercent);
                 }
             }
 
@@ -313,27 +367,41 @@ public class GameController : MonoBehaviour
 
     public void DragItemStart(IItemGenerator slotResourceBuilding, Item itemData, Vector2 pos)
     {
+        _dragging = true;
+        _elapsedSinceLastDragFinished = -1;
+
         slotResourceBuilding.DoDragStart(pos);
     }
 
     public void DragItemEnd(IItemGenerator slotResourceBuilding, Item itemData, Vector2 pos)
     {
+        _dragging = false;
+        _elapsedSinceLastDragFinished = 0;
+
         slotResourceBuilding.DoDragEnd(pos);
         // Valid  resource generator?
         Recipe recipeData;
+        bool clear = true;
         SlotRecipesBuilding buildingSlot = FindRecipeBuildingSlotForItemAtPosition(pos, itemData, out recipeData);
         if(buildingSlot != null)
         {
             if(buildingSlot.MissingRecipe)
             {
-                buildingSlot.SetActiveRecipe(recipeData, itemData);
+                clear = buildingSlot.SetActiveRecipe(recipeData, itemData);
             }
             else
             {
                 buildingSlot.AddRequirement(itemData);
             }
 
-            slotResourceBuilding.ClearContents();
+            if(clear)
+            {
+                slotResourceBuilding.ClearContents();
+            }
+            else
+            {
+                slotResourceBuilding.ResetSlot();
+            }
             return;           
         }
 

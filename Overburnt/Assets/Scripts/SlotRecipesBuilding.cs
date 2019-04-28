@@ -33,7 +33,7 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
         if (_dragging)
         {
             _dragging = false;
-            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
+            Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Slot.transform.position = worldPos;
             _gameController.DragItemEnd(this, _currentItem, worldPos);
         }
@@ -86,6 +86,12 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
 
     internal Recipe FindRecipeUsingItem(Item item)
     {
+        if (SlotStatus == RecipeSlotStatus.Generating)
+        {
+            return null;
+        }
+
+        bool pendingPickup = SlotStatus == RecipeSlotStatus.PickupPending;
         Recipe candidateRecipe = null;
         foreach (var recipe in AllowedRecipes)
         {
@@ -95,18 +101,28 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
                 continue;
             }
 
-            if (candidateRecipe == null)
+            if (pendingPickup)
             {
-                candidateRecipe = recipeData;
+                if (!IsCurrentItemRequirementForRecipe(recipeData))
+                {
+                    continue;
+                }
+                else
+                {
+                    candidateRecipe = recipeData;
+                    break;
+                }
             }
-            else if(SlotStatus == RecipeSlotStatus.PickupPending && IsCurrentItemRequirementForRecipe(recipeData))
+            else
             {
-                candidateRecipe = recipeData;
-                break;
-            }
-            else if(recipeData.IsShorterThan(candidateRecipe) && !(SlotStatus == RecipeSlotStatus.PickupPending && IsCurrentItemRequirementForRecipe(candidateRecipe)))
-            {
-                candidateRecipe = recipeData;
+                if (candidateRecipe == null)
+                {
+                    candidateRecipe = recipeData;
+                }
+                else if (recipeData.IsShorterThan(candidateRecipe))
+                {
+                    candidateRecipe = recipeData;
+                }
             }
         }
         return candidateRecipe;
@@ -235,23 +251,29 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
         }
     }
 
-    public void SetActiveRecipe(Recipe recipeData, Item itemData)
+    public bool SetActiveRecipe(Recipe recipeData, Item itemData)
     {
+        if(_currentItem != null && _currentItem == itemData)
+        {
+            return false;
+        }
+
         _currentRecipe = recipeData;
         _currentRequirements.Clear();
         Slot.sprite = null;
+        bool pickupPending = SlotStatus == RecipeSlotStatus.PickupPending;
         SlotStatus = RecipeSlotStatus.AwaitingRequirements;
-
+        
         if (_currentItem != null && IsCurrentItemRequirementForRecipe(_currentRecipe))
         {
             AddRequirement(_currentItem);
-            _currentItem = null;
         }
 
         var buildingRecipeData = AllowedRecipes.Find(x => x.Recipe == recipeData.RecipeID);
         _currentSpawnTime = buildingRecipeData.Time;
 
         AddRequirement(itemData);
+        return true;
     }
 
     public bool IsCurrentItemRequirementForRecipe(Recipe currentRecipe)
@@ -300,7 +322,8 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
 
     public bool ContainsPosition(Vector2 pos)
     {
-        return CollisionArea.OverlapPoint(pos);
+        bool overlaps = CollisionArea.OverlapPoint(pos);
+        return overlaps;
     }
 
     public void ResetSlot()
