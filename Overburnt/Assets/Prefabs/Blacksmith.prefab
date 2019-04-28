@@ -313,12 +313,22 @@ PrefabInstance:
     - target: {fileID: 4742220795419715688, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: AllowedRecipes.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4742220795419715688, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: AllowedRecipes.Array.data[0].Time
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4742220795419715688, guid: 29f1bb105071ef24daf00fc4a294537d,
+        type: 3}
+      propertyPath: AllowedRecipes.Array.data[1].Time
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4742220795419715688, guid: 29f1bb105071ef24daf00fc4a294537d,
+        type: 3}
+      propertyPath: AllowedRecipes.Array.data[1].Recipe
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6464062877424451201, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
@@ -471,12 +481,22 @@ PrefabInstance:
     - target: {fileID: 4742220795419715688, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: AllowedRecipes.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4742220795419715688, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: AllowedRecipes.Array.data[0].Time
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4742220795419715688, guid: 29f1bb105071ef24daf00fc4a294537d,
+        type: 3}
+      propertyPath: AllowedRecipes.Array.data[1].Time
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4742220795419715688, guid: 29f1bb105071ef24daf00fc4a294537d,
+        type: 3}
+      propertyPath: AllowedRecipes.Array.data[1].Recipe
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6464062877424451201, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}

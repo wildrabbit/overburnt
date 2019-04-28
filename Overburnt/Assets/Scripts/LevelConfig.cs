@@ -25,12 +25,14 @@ public class RecipeBuildingInfo
 
 public class LevelConfig : MonoBehaviour
 {
-    public string Description;
-    public Sprite IntroSceneGfx;
+    public string DescriptionStart;
+    public string DescriptionEnd;
+    public Sprite[] HintGraphics;
 
     public List<ResourceBuildingInfo> ActiveResourcesBuildings;    
     public List<RecipeBuildingInfo> ActiveRecipeBuildings;
     public List<ClientSlot> ActiveSlots;
+    public List<DisposalFacility> Wastelands;
 
     public float LevelTimeSeconds;
     public int NumClients;
@@ -45,4 +47,6 @@ public class LevelConfig : MonoBehaviour
     public float SpawnChanceSecondItem;
     public int PatienceMin;
     public int PatienceMax;
+
+    public bool IgnoreFatigueThresholds;
 }

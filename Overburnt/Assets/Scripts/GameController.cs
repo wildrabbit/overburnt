@@ -5,6 +5,20 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using URandom = UnityEngine.Random;
 
+[Serializable]
+public class FatigueRestoreThreshold
+{
+    public float Value;
+    public float FatigueRecoveryPercent;
+}
+
+[Serializable]
+public class EarningModifierThresholds
+{
+    public float TimeLeftThresholdValue;
+    public float ExtraPercent;
+}
+
 public enum ItemID
 {
     Iron,
@@ -112,6 +126,7 @@ public class GameController : MonoBehaviour
     public List<ResourceBuilding> AllResourceBuildings;
     public List<RecipesBuilding> AllRecipeBuildings;
     public List<ClientSlot> AllClientSlots;
+    public List<DisposalFacility> AllDisposalFacilities;
 
 
     public int LevelIdx;
@@ -120,6 +135,7 @@ public class GameController : MonoBehaviour
     List<ResourceBuilding> ActiveResourceBuildings;
     List<RecipesBuilding> ActiveRecipeBuildings;
     List<ClientSlot> ActiveClientRequestSlots;
+    List<DisposalFacility> ActiveDisposalFacilities;
 
 
     [Header("Player progression stuff")]
@@ -128,6 +144,8 @@ public class GameController : MonoBehaviour
     public float DragDepletionRate;
     public float IdleToRestoreTime;
     public float FatigueRestoreRate;
+    public List<FatigueRestoreThreshold> FatigueRestoreThresholds;
+    public List<EarningModifierThresholds> EarningModifiers;
 
     [Header("Misc")]
     public float LevelResumeTime;
@@ -160,18 +178,28 @@ public class GameController : MonoBehaviour
 
     public event Action<int> OnEarningsChanged;
     public event Action GameReset;
-    public event Action<Result,int,int> GameFinished;
+    public event Action<Result,int,int, float> GameFinished;
     public event Action<int> OnFatigueChanged;
-    public event Action GameBeaten;
+    public event Action<float> GameBeaten;
+    public event Action GameReady;
 
-    public event Action<int, LevelConfig> GameStarted;
+    public event Action<int, LevelConfig, float> GameStarted;
+
+    public float SecondsToGameStart;
+    bool _startReady;
 
     // Start is called before the first frame update
     void Start()
     {
         Debug.Log("Init!");
         InitGame();
+        ResetGame();
         InitLevel(LevelList[LevelIdx]);
+    }
+
+    void ResetGame()
+    {
+        StartFatigue = 0;
     }
 
     void InitGame()
@@ -190,6 +218,12 @@ public class GameController : MonoBehaviour
         foreach(var recB in AllRecipeBuildings)
         {
             recB.Init(this);
+        }
+
+        ActiveDisposalFacilities = new List<DisposalFacility>();
+        foreach(var wasteland in AllDisposalFacilities)
+        {
+            wasteland.Init(this);
         }
     }
 
@@ -221,7 +255,6 @@ public class GameController : MonoBehaviour
             RecipeBuildingInfo resInfo = config.ActiveRecipeBuildings.Find(x => x.Building == building);
             if (config.ActiveRecipeBuildings.Exists(x => x.Building == building))
             {
-                building.Init(this);
                 building.LoadBuilding(resInfo);
                 ActiveRecipeBuildings.Add(building);
             }
@@ -236,7 +269,6 @@ public class GameController : MonoBehaviour
         {
             if(config.ActiveSlots.Contains(slot))
             {
-                slot.Init(this);
                 ActiveClientRequestSlots.Add(slot);
             }
             else
@@ -245,6 +277,19 @@ public class GameController : MonoBehaviour
             }
         }
 
+        ActiveDisposalFacilities.Clear();
+        foreach (var wasteland in AllDisposalFacilities)
+        {
+            if (config.Wastelands.Contains(wasteland))
+            {
+                wasteland.Load();
+                ActiveDisposalFacilities.Add(wasteland);
+            }
+            else
+            {
+                wasteland.UnLoad();
+            }
+        }
         _requestAllocations = new Dictionary<ClientSlot, RequestData>();
 
         int numClients = CurrentLevel.NumClients;
@@ -261,52 +306,35 @@ public class GameController : MonoBehaviour
 
 
         _stalledRequests = new Queue<RequestData>();
-        GameStarted?.Invoke(LevelIdx, CurrentLevel);
+
+        GameStarted?.Invoke(LevelIdx, CurrentLevel, SecondsToGameStart);
 
         _dragging = false;
-        _fatigue = 0;
+        _fatigue = StartFatigue;
         _elapsedSinceLastDragFinished = -1.0f;
+
+        _startReady = false;
+        StartCoroutine(DelayedReady());
     }
 
-    //private void Reset()
-    //{
-    //    foreach (var building in ActiveResourceBuildings)
-    //    {
-    //        building.Reset();
-    //    }
+    IEnumerator DelayedReady()
+    {
+        yield return new WaitForSeconds(SecondsToGameStart);
+        while(!Input.anyKey)
+        {
+            yield return null;
+        }
+        _startReady = true;
+        GameReady?.Invoke();
+    }
 
-    //    foreach(var building in ActiveRecipeBuildings)
-    //    {
-    //        building.Reset();
-    //    }
-
-    //    _requestAllocations = new Dictionary<ClientSlot, RequestData>();
-
-    //    _requestTimes = new float[NumRequests];
-    //    float avgTime = GameTime / NumRequests;
-    //    for(int i = 0; i < NumRequests; ++i)
-    //    {
-    //        _requestTimes[i] = Mathf.Clamp(i * avgTime + UnityEngine.Random.Range(-RequestNoise, RequestNoise), 0, GameTime);
-    //    }
-    //    _requestIdx = 0;
-    //    _requestElapsed = 0;
-    //    _numFailures = 0;
-    //    _revenue = 0;
-    //    foreach(var slot in ClientRequestSlots)
-    //    {
-    //        slot.Clear();
-    //    }
-    //    _stalledRequests = new Queue<RequestData>();
-    //    GameReset?.Invoke();
-
-    //    _dragging = false;
-    //    _fatigue = 0;
-    //    _elapsedSinceLastDragFinished = -1.0f;
-    //}
-
-    // Update is called once per frame
     void Update()
     {
+        if (!_startReady)
+        {
+            return;
+        }
+            
         float dt = Time.deltaTime;
         if (_finished)
         {
@@ -319,16 +347,19 @@ public class GameController : MonoBehaviour
                     {
                         LevelIdx = 0;
                         Debug.Log("Level beaten!");
-                        GameBeaten?.Invoke();
+                        GameBeaten?.Invoke(LevelResumeTime);
                     }
                     else
                     {
+                        CheckStartFatigue();
+                        Debug.Log("Next level!");
                         GameReset?.Invoke();
                         InitLevel(LevelList[LevelIdx]);
                     }
                 }
                 else
                 {
+                    Debug.Log("Replaying!");
                     GameReset?.Invoke();
                     InitLevel(LevelList[LevelIdx]);
                 }
@@ -367,7 +398,7 @@ public class GameController : MonoBehaviour
                 _result = Result.LostExhaustion; // Override to avoid several ifs above.
             }
 
-            GameFinished?.Invoke(_result, _revenue, nextRev);
+            GameFinished?.Invoke(_result, _revenue, nextRev, LevelResumeTime);
             _finished = true;
             _gameTimerElapsed = Time.time;
         }
@@ -440,6 +471,25 @@ public class GameController : MonoBehaviour
                 slot.UpdateLogic(dt);
             }
         }
+    }
+
+    void CheckStartFatigue()
+    {
+        if(CurrentLevel.IgnoreFatigueThresholds)
+        {
+            StartFatigue = 0;
+            return;
+        }
+        float percent = FatiguePercent;
+        int thresholdIdx = 0;
+        while(thresholdIdx < FatigueRestoreThresholds.Count && percent > FatigueRestoreThresholds[thresholdIdx].Value)
+        {
+            thresholdIdx++;
+        }
+
+        float restorationPercent = FatigueRestoreThresholds[thresholdIdx].FatigueRecoveryPercent;
+        float restoreAmount = _fatigue * restorationPercent * 0.01f;
+        StartFatigue = _fatigue - restoreAmount;
     }
 
     private RequestData GenerateRequest()
@@ -533,6 +583,15 @@ public class GameController : MonoBehaviour
             }
         }
 
+        foreach(var wasteland in ActiveDisposalFacilities)
+        {
+            if(wasteland.OverlapsPoint(pos))
+            {
+                slotResourceBuilding.ClearContents();
+                return;
+            }
+        }
+
         // Otherwise: 
         slotResourceBuilding.ResetSlot();
 
@@ -565,10 +624,18 @@ public class GameController : MonoBehaviour
         foreach (var itemID in data.Items)
         {
             Item itemData = GetItem(itemID);
-            revenue += itemData.BaseRevenue; // TODO: Extra score
+            revenue += itemData.BaseRevenue;
         }
-        // TODO: Notify revenue (and then add?)
-        _revenue += revenue;
+
+        int idx = 0;
+        while(idx < EarningModifiers.Count && timeLeftPercent > EarningModifiers[idx].TimeLeftThresholdValue)
+        {
+            idx++;
+        }
+        float multiplier = EarningModifiers[idx].ExtraPercent;
+        float modifiedRevenue = revenue * multiplier;
+
+        _revenue += Mathf.FloorToInt(modifiedRevenue);
         OnEarningsChanged?.Invoke(_revenue);
         Debug.Log($"Request {data.TicketIdx} succeeded. Revenue: {revenue} (Total: {_revenue})");
         _requestAllocations.Remove(clientSlot);
@@ -583,6 +650,18 @@ public class GameController : MonoBehaviour
     internal void ClientRequestFailed(ClientSlot clientSlot)
     {
         var reqData = _requestAllocations[clientSlot];
+        int revenue = 0;
+        foreach(var itemID in reqData.Items)
+        {
+            Item item = GetItem(itemID);
+            revenue += item.BaseRevenue;
+        }
+        _revenue -= revenue;
+        if(_revenue < 0)
+        {
+            _revenue = 0;
+        }
+
         Debug.Log($"Request {reqData.TicketIdx} failed. Contents: {reqData.Items}");
         _numFailures++;
         _requestAllocations.Remove(clientSlot);
