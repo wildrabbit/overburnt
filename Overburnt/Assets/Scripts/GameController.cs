@@ -204,6 +204,8 @@ public class GameController : MonoBehaviour
 
     void InitGame()
     {
+        _requestAllocations = new Dictionary<ClientSlot, RequestData>();
+
         ActiveClientRequestSlots = new List<ClientSlot>();
         foreach(var slot in AllClientSlots)
         {
@@ -264,16 +266,14 @@ public class GameController : MonoBehaviour
             }
         }
 
+        _requestAllocations.Clear();
         ActiveClientRequestSlots.Clear();
         foreach(var slot in AllClientSlots)
         {
-            if(config.ActiveSlots.Contains(slot))
+            slot.Clear();
+            if (config.ActiveSlots.Contains(slot))
             {
                 ActiveClientRequestSlots.Add(slot);
-            }
-            else
-            {
-                slot.Clear();
             }
         }
 
@@ -290,8 +290,7 @@ public class GameController : MonoBehaviour
                 wasteland.UnLoad();
             }
         }
-        _requestAllocations = new Dictionary<ClientSlot, RequestData>();
-
+       
         int numClients = CurrentLevel.NumClients;
         _requestTimes = new float[numClients];
         float avgTime = CurrentLevel.LevelTimeSeconds / CurrentLevel.NumClients;
