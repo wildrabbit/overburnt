@@ -23,7 +23,8 @@ public enum RecipeID
     SpearFromStick,
     SpearFromPoint,
     WoodenStick,
-    IronSpearPoint
+    IronSpearPoint,
+    WoodenSword
 }
 
 public enum ItemType

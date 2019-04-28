@@ -2288,6 +2288,11 @@ MonoBehaviour:
     Requirements: 01000000
     OutputItem: 3
     Icon: {fileID: 0}
+  - Name: WOODEN SWORD
+    RecipeID: 3
+    Requirements: 01000000
+    OutputItem: 7
+    Icon: {fileID: 21300000, guid: 216d9e17fa7d4254eb817afda9b7e6ae, type: 3}
   LevelList:
   - {fileID: 1681699806}
   - {fileID: 1191744219}
