@@ -1,15 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using System;
 
+[Serializable]
+public class ResultData
+{
+    public Result resultKey;
+    public string text;
+    public bool showNext;
+    public Color textColour;
+}
+
 public class GameHUD : MonoBehaviour
 {
+    public List<ResultData> Results;
+
     public GameController _gameController;
     public TextMeshProUGUI _timeLeft;
     public TextMeshProUGUI _income;
+
+    public GameObject _endPanel;
+    public GameObject _nextRoot;
+    public TextMeshProUGUI _result;
+    public TextMeshProUGUI _revenue;
+    public TextMeshProUGUI _nextBestRevenue;
 
     // Start is called before the first frame update
     void Start()
@@ -17,6 +32,36 @@ public class GameHUD : MonoBehaviour
         _timeLeft.text = FormatTime(_gameController.TimeLeft);
         _income.text = _gameController.Earnings.ToString();
         _gameController.OnEarningsChanged += RefreshIncome;
+        _gameController.GameReset += OnReset;
+        _gameController.GameFinished += OnFinished ;
+        _endPanel.SetActive(false);
+    }
+
+    private void OnFinished(Result arg1, int arg2, int arg3)
+    {
+        if (!_endPanel.activeInHierarchy)
+        {
+            _endPanel.SetActive(true);
+        }
+        ResultData res = Results.Find(x => x.resultKey == arg1);
+        if(res == null)
+        {
+            return;
+        }
+
+        _nextRoot.SetActive(res.showNext);
+        _result.color = res.textColour;
+        _result.text = res.text;
+        _revenue.text = arg2.ToString();
+        _nextBestRevenue.text = arg3.ToString();
+    }
+
+    void OnReset()
+    {
+        if(_endPanel.activeInHierarchy)
+        {
+            _endPanel.SetActive(false);
+        }
     }
 
     void RefreshIncome(int newValue)

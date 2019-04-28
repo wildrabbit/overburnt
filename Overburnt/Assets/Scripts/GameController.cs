@@ -158,7 +158,8 @@ public class GameController : MonoBehaviour
     private Result _result;
 
     public event Action<int> OnEarningsChanged;
-
+    public event Action GameReset;
+    public event Action<Result,int,int> GameFinished;
 
     // Start is called before the first frame update
     void Start()
@@ -199,6 +200,7 @@ public class GameController : MonoBehaviour
             slot.Clear();
         }
         _stalledRequests = new Queue<RequestData>();
+        GameReset?.Invoke();
     }
 
     // Update is called once per frame
@@ -215,25 +217,30 @@ public class GameController : MonoBehaviour
             return;
         }
         _elapsed += dt;
+        int nextRev = 0;
         if (_elapsed >= GameTime)
         {
             Debug.Log("Timeout!");
             if(_revenue < MinRevenue)
             {
                 _result = Result.LostEarnings;
+                nextRev = MinRevenue;
             }
             else if(_revenue < GoodRevenue)
             {
                 _result = Result.WonBase;
+                nextRev = GoodRevenue;
             }
             else if (_revenue < GreatRevenue)
             {
                 _result = Result.WonGood;
+                nextRev = GreatRevenue;
             }
             else
             {
                 _result = Result.WonGreat;
             }
+            GameFinished?.Invoke(_result, _revenue, nextRev);
             _finished = true;
             _elapsed = Time.time;
         }
