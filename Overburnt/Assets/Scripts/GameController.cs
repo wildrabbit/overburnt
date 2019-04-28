@@ -49,6 +49,16 @@ public enum InteractionType
     Drag
 }
 
+public enum Result
+{
+    Running,
+    LostExhaustion,
+    LostEarnings,
+    WonBase,
+    WonGood,
+    WonGreat
+}
+
 [Serializable]
 public class Item
 {
@@ -123,6 +133,10 @@ public class GameController : MonoBehaviour
     public int GoodRevenue;
     public int GreatRevenue;
 
+    public float RestartTime;
+
+
+
     Dictionary<ClientSlot, RequestData> _requestAllocations;
 
     float _elapsed;
@@ -141,6 +155,7 @@ public class GameController : MonoBehaviour
     IItemGenerator _draggedItem;
     Item _itemData;
     int _numFailures;
+    private Result _result;
 
     public event Action<int> OnEarningsChanged;
 
@@ -154,7 +169,7 @@ public class GameController : MonoBehaviour
 
     private void Reset()
     {
-        
+        _result = Result.Running;
         _elapsed = 0;
         _finished = false;
         foreach (var building in ResourceBuildings)
@@ -173,9 +188,10 @@ public class GameController : MonoBehaviour
         float avgTime = GameTime / NumRequests;
         for(int i = 0; i < NumRequests; ++i)
         {
-            _requestTimes[i] = Mathf.Clamp(i * avgTime * UnityEngine.Random.Range(-RequestNoise, RequestNoise), 0, GameTime);
+            _requestTimes[i] = Mathf.Clamp(i * avgTime + UnityEngine.Random.Range(-RequestNoise, RequestNoise), 0, GameTime);
         }
         _requestIdx = 0;
+        _requestElapsed = 0;
         _numFailures = 0;
         _revenue = 0;
         foreach(var slot in ClientRequestSlots)
@@ -191,7 +207,7 @@ public class GameController : MonoBehaviour
         float dt = Time.deltaTime;
         if (_finished)
         {
-            if(Input.anyKey)
+            if(Input.anyKey && Time.time - _elapsed > RestartTime)
             {
                 Debug.Log("Restart!");
                 Reset();
@@ -202,7 +218,24 @@ public class GameController : MonoBehaviour
         if (_elapsed >= GameTime)
         {
             Debug.Log("Timeout!");
+            if(_revenue < MinRevenue)
+            {
+                _result = Result.LostEarnings;
+            }
+            else if(_revenue < GoodRevenue)
+            {
+                _result = Result.WonBase;
+            }
+            else if (_revenue < GreatRevenue)
+            {
+                _result = Result.WonGood;
+            }
+            else
+            {
+                _result = Result.WonGreat;
+            }
             _finished = true;
+            _elapsed = Time.time;
         }
         else
         {
@@ -224,7 +257,6 @@ public class GameController : MonoBehaviour
                         ClientRequestSlots[slotIdx].InitClient(this, reqData);
                     }
                     _requestIdx++;
-                    _requestElapsed = 0;
                 }
             }
 
@@ -236,21 +268,26 @@ public class GameController : MonoBehaviour
             {
                 recBuilding.UpdateGame(dt);
             }
+
+            foreach(var slot in ClientRequestSlots)
+            {
+                slot.UpdateLogic(dt);
+            }
         }
     }
 
     private RequestData GenerateRequest()
     {
         List<ItemID> items = new List<ItemID>();
-        items.Add(OptionsItem1[URandom.Range(0, OptionsItem1.Count - 1)]);
+        items.Add(OptionsItem1[URandom.Range(0, OptionsItem1.Count)]);
         if(URandom.value < Chance2ItemRequest)
         {
-            items.Add(OptionsItem2[URandom.Range(0, OptionsItem2.Count - 1)]);
+            items.Add(OptionsItem2[URandom.Range(0, OptionsItem2.Count)]);
         }
         RequestData reqData = new RequestData()
         {
             Timeout = URandom.Range(PatienceMin, PatienceMax),
-            ClientPrefab = ClientView[URandom.Range(0, ClientView.Count - 1)],
+            ClientPrefab = ClientView[URandom.Range(0, ClientView.Count)],
             TicketIdx = _requestIdx,
             Items = items
         };
@@ -308,6 +345,7 @@ public class GameController : MonoBehaviour
             if(slot.IsRequestedItem(itemData))
             {
                 slot.GiveItem(itemData.ItemID);
+                slotResourceBuilding.ClearContents();
             }
         }
 

@@ -33,8 +33,9 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
         if (_dragging)
         {
             _dragging = false;
-            Slot.transform.position = eventData.pointerPressRaycast.worldPosition;
-            _gameController.DragItemEnd(this, _currentItem, eventData.position);
+            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
+            Slot.transform.position = worldPos;
+            _gameController.DragItemEnd(this, _currentItem, worldPos);
         }
     }
 
@@ -103,7 +104,7 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
                 candidateRecipe = recipeData;
                 break;
             }
-            else if(recipeData.IsShorterThan(candidateRecipe))
+            else if(recipeData.IsShorterThan(candidateRecipe) && !(SlotStatus == RecipeSlotStatus.PickupPending && IsCurrentItemRequirementForRecipe(candidateRecipe)))
             {
                 candidateRecipe = recipeData;
             }
@@ -143,6 +144,7 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
             if (_elapsed >= _currentSpawnTime)
             {
                 _elapsed = _currentSpawnTime;
+                Debug.Log($"recipe {_currentRecipe.Name} available!");
                 StartCoroutine(PrepareReady());
             }
         }
@@ -152,6 +154,7 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
     {
         yield return new WaitForSeconds(0.1f);
         _currentItem = _gameController.GetItem(_currentRecipe.OutputItem);
+        Debug.Log($"Ready {_currentItem.Name} item");
         _currentRequirements.Clear();
         _currentRecipe = null;
         _currentSpawnTime = 0;
@@ -226,7 +229,7 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (_currentItem.InteractionType != InteractionType.Click)
+        if (_currentItem == null || _currentItem.InteractionType != InteractionType.Click)
         {
             return;
         }
@@ -307,6 +310,8 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
 
     public void ClearContents()
     {
+        Debug.Log($"Cleared!");
+
         ResetSlot();
         Slot.sprite = null;
         SlotStatus = RecipeSlotStatus.AwaitingRequirements;

@@ -77,10 +77,26 @@ public class ClientSlot : MonoBehaviour
         if(_requiredItems.Contains(item))
         {
             _requiredItems.Remove(item);
-            // TODO: Refresh sprites, time
-            if(_requiredItems.Count == 0)
+            var itemData = _gameController.GetItem(item);
+            bool firstItem = _requiredItems.Count > 0; ;
+            Item1.enabled = firstItem;
+            if (firstItem)
+                Item1.sprite = _gameController.GetItem(_requiredItems[0])?.Icon;
+            bool secondItem = _requiredItems.Count > 1;
+            Item2.enabled = secondItem;
+            if (secondItem)
+                Item2.sprite = _gameController.GetItem(_requiredItems[1])?.Icon;
+            if (_requiredItems.Count == 0)
             {
-                // revenue
+                if(itemData.ClientWaitTimePercentRestored > 0)
+                {
+                    float AmountRestored = itemData.ClientWaitTimePercentRestored * 0.01f * _baseTimeout;
+                    _elapsed -= AmountRestored;
+                    if(_elapsed < 0)
+                    {
+                        _elapsed = 0;
+                    }
+                }
                 _gameController.RequestFulfilled(this);
                 // animate exit
                 Clear();

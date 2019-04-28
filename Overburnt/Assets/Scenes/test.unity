@@ -1937,8 +1937,8 @@ MonoBehaviour:
   OptionsItem2: 02000000
   ClientView:
   - {fileID: 7840228020315824450, guid: eb0f86e55b30b744da958e8c1bd0c41d, type: 3}
-  PatienceMin: 10
-  PatienceMax: 13
+  PatienceMin: 18
+  PatienceMax: 28
   MinRevenue: 30
   GoodRevenue: 60
   GreatRevenue: 100
