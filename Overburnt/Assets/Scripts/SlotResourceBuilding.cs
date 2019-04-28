@@ -34,7 +34,12 @@ public class SlotResourceBuilding : MonoBehaviour, IItemGenerator, IPointerClick
     public void Init(ResourceBuilding parent)
     {
         _parent = parent;
-        _gameController = parent.GameController;
+        _gameController = parent.GameController;       
+    }
+
+    public void Load()
+    {
+        gameObject.SetActive(true);
         _elapsed = 0;
         _itemData = _gameController.GetItem(ItemID);
         _draggingSlot = false;
@@ -56,6 +61,11 @@ public class SlotResourceBuilding : MonoBehaviour, IItemGenerator, IPointerClick
             Slot.color = color;
             SlotStatus = SlotStatus.Generating;
         }
+    }
+
+    public void Unload()
+    {
+        gameObject.SetActive(false);
     }
 
     public void UpdateSlot(float dt)
@@ -172,7 +182,7 @@ public class SlotResourceBuilding : MonoBehaviour, IItemGenerator, IPointerClick
             return;
         }
 
-        if(!_draggingSlot)
+        if(!_draggingSlot && SlotStatus != SlotStatus.Generating)
         {
             Slot.sortingOrder += 100;
             _draggingSlot = true;

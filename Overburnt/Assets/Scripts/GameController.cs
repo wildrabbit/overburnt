@@ -104,41 +104,32 @@ public class RequestData
 
 public class GameController : MonoBehaviour
 {
+    [Header("Config")]
     public List<Item> ItemDataList;
-
-    internal Recipe GetRecipe(RecipeID recipeID)
-    {
-        return RecipeDataList.Find(x => x.RecipeID == recipeID);
-    }
-
     public List<Recipe> RecipeDataList;
+    public List<LevelConfig> LevelList;
+    public List<ResourceBuilding> AllResourceBuildings;
+    public List<RecipesBuilding> AllRecipeBuildings;
+    public List<ClientSlot> AllClientSlots;
 
-    public List<ResourceBuilding> ResourceBuildings;
-    public List<RecipesBuilding> RecipeBuildings;
 
-    public List<ClientSlot> ClientRequestSlots;
+    public int LevelIdx;
+    public LevelConfig CurrentLevel;
 
-    public float GameTime;
-    public int NumRequests;
-    public int RequestNoise = 2;
+    List<ResourceBuilding> ActiveResourceBuildings;
+    List<RecipesBuilding> ActiveRecipeBuildings;
+    List<ClientSlot> ActiveClientRequestSlots;
 
-    public float Chance2ItemRequest = 0.25f;
-    public List<ItemID> OptionsItem1;
-    public List<ItemID> OptionsItem2;
-    public List<GameObject> ClientView;
-    public float PatienceMin;
-    public float PatienceMax;
 
-    public int MinRevenue;
-    public int GoodRevenue;
-    public int GreatRevenue;
-    public float RestartTime;
-
+    [Header("Player progression stuff")]
     public float StartFatigue;
     public float MaxFatigue;
     public float DragDepletionRate;
     public float IdleToRestoreTime;
     public float FatigueRestoreRate;
+
+    [Header("Misc")]
+    public float LevelResumeTime;
 
     bool _dragging;
     float _elapsedSinceLastDragFinished = -1;    
@@ -155,7 +146,7 @@ public class GameController : MonoBehaviour
     float[] _requestTimes;
     Queue<RequestData> _stalledRequests; // Generated, but no free space
 
-    public float TimeLeft => (GameTime - _gameTimerElapsed);
+    public float TimeLeft => _finished ? 0 : (CurrentLevel.LevelTimeSeconds - _gameTimerElapsed);
 
     public int Earnings => _revenue;
     public float Fatigue => _fatigue;
@@ -170,52 +161,147 @@ public class GameController : MonoBehaviour
     public event Action GameReset;
     public event Action<Result,int,int> GameFinished;
     public event Action<int> OnFatigueChanged;
+    public event Action GameBeaten;
+
+    public event Action<int, LevelConfig> GameStarted;
 
     // Start is called before the first frame update
     void Start()
     {
         Debug.Log("Init!");
-        Reset();    
+        InitGame();
+        InitLevel(LevelList[LevelIdx]);
     }
 
-    private void Reset()
+    void InitGame()
     {
+        ActiveClientRequestSlots = new List<ClientSlot>();
+        foreach(var slot in AllClientSlots)
+        {
+            slot.Init(this);
+        }
+        ActiveResourceBuildings = new List<ResourceBuilding>();
+        foreach(var resB in AllResourceBuildings)
+        {
+            resB.Init(this);
+        }
+        ActiveRecipeBuildings = new List<RecipesBuilding>();
+        foreach(var recB in AllRecipeBuildings)
+        {
+            recB.Init(this);
+        }
+    }
+
+    void InitLevel(LevelConfig config)
+    {
+        CurrentLevel = config;
         _result = Result.Running;
         _gameTimerElapsed = 0;
         _finished = false;
-        foreach (var building in ResourceBuildings)
+
+        ActiveResourceBuildings.Clear();
+        foreach(var building in AllResourceBuildings)
         {
-            building.Reset();
+            ResourceBuildingInfo resInfo = config.ActiveResourcesBuildings.Find(x => x.Building == building);
+            if (resInfo != null)
+            {
+                building.LoadBuilding(resInfo);
+                ActiveResourceBuildings.Add(building);
+            }
+            else
+            {
+                building.Unload();
+            }
         }
 
-        foreach(var building in RecipeBuildings)
+        ActiveRecipeBuildings.Clear();
+        foreach (var building in AllRecipeBuildings)
         {
-            building.Reset();
+            RecipeBuildingInfo resInfo = config.ActiveRecipeBuildings.Find(x => x.Building == building);
+            if (config.ActiveRecipeBuildings.Exists(x => x.Building == building))
+            {
+                building.Init(this);
+                building.LoadBuilding(resInfo);
+                ActiveRecipeBuildings.Add(building);
+            }
+            else
+            {
+                building.Unload();
+            }
+        }
+
+        ActiveClientRequestSlots.Clear();
+        foreach(var slot in AllClientSlots)
+        {
+            if(config.ActiveSlots.Contains(slot))
+            {
+                slot.Init(this);
+                ActiveClientRequestSlots.Add(slot);
+            }
+            else
+            {
+                slot.Clear();
+            }
         }
 
         _requestAllocations = new Dictionary<ClientSlot, RequestData>();
 
-        _requestTimes = new float[NumRequests];
-        float avgTime = GameTime / NumRequests;
-        for(int i = 0; i < NumRequests; ++i)
+        int numClients = CurrentLevel.NumClients;
+        _requestTimes = new float[numClients];
+        float avgTime = CurrentLevel.LevelTimeSeconds / CurrentLevel.NumClients;
+        for (int i = 0; i < numClients; ++i)
         {
-            _requestTimes[i] = Mathf.Clamp(i * avgTime + UnityEngine.Random.Range(-RequestNoise, RequestNoise), 0, GameTime);
+            _requestTimes[i] = Mathf.Clamp(i * avgTime + UnityEngine.Random.Range(-CurrentLevel.DistributionNoise, CurrentLevel.DistributionNoise), 0, CurrentLevel.LevelTimeSeconds);
         }
         _requestIdx = 0;
         _requestElapsed = 0;
         _numFailures = 0;
         _revenue = 0;
-        foreach(var slot in ClientRequestSlots)
-        {
-            slot.Clear();
-        }
+
+
         _stalledRequests = new Queue<RequestData>();
-        GameReset?.Invoke();
+        GameStarted?.Invoke(LevelIdx, CurrentLevel);
 
         _dragging = false;
         _fatigue = 0;
         _elapsedSinceLastDragFinished = -1.0f;
     }
+
+    //private void Reset()
+    //{
+    //    foreach (var building in ActiveResourceBuildings)
+    //    {
+    //        building.Reset();
+    //    }
+
+    //    foreach(var building in ActiveRecipeBuildings)
+    //    {
+    //        building.Reset();
+    //    }
+
+    //    _requestAllocations = new Dictionary<ClientSlot, RequestData>();
+
+    //    _requestTimes = new float[NumRequests];
+    //    float avgTime = GameTime / NumRequests;
+    //    for(int i = 0; i < NumRequests; ++i)
+    //    {
+    //        _requestTimes[i] = Mathf.Clamp(i * avgTime + UnityEngine.Random.Range(-RequestNoise, RequestNoise), 0, GameTime);
+    //    }
+    //    _requestIdx = 0;
+    //    _requestElapsed = 0;
+    //    _numFailures = 0;
+    //    _revenue = 0;
+    //    foreach(var slot in ClientRequestSlots)
+    //    {
+    //        slot.Clear();
+    //    }
+    //    _stalledRequests = new Queue<RequestData>();
+    //    GameReset?.Invoke();
+
+    //    _dragging = false;
+    //    _fatigue = 0;
+    //    _elapsedSinceLastDragFinished = -1.0f;
+    //}
 
     // Update is called once per frame
     void Update()
@@ -223,10 +309,28 @@ public class GameController : MonoBehaviour
         float dt = Time.deltaTime;
         if (_finished)
         {
-            if(Input.anyKey && Time.time - _gameTimerElapsed > RestartTime)
+            if(Input.anyKey && Time.time - _gameTimerElapsed > LevelResumeTime)
             {
-                Debug.Log("Restart!");
-                Reset();
+                if(_result != Result.Running && _result != Result.LostEarnings && _result != Result.LostExhaustion)
+                {
+                    LevelIdx++;
+                    if(LevelIdx == LevelList.Count)
+                    {
+                        LevelIdx = 0;
+                        Debug.Log("Level beaten!");
+                        GameBeaten?.Invoke();
+                    }
+                    else
+                    {
+                        GameReset?.Invoke();
+                        InitLevel(LevelList[LevelIdx]);
+                    }
+                }
+                else
+                {
+                    GameReset?.Invoke();
+                    InitLevel(LevelList[LevelIdx]);
+                }
             }
             return;
         }
@@ -234,23 +338,23 @@ public class GameController : MonoBehaviour
         bool exhausted = _result == Result.LostExhaustion;
         int nextRev = 0;
 
-        if (_gameTimerElapsed >= GameTime || exhausted)
+        if (_gameTimerElapsed >= CurrentLevel.LevelTimeSeconds || exhausted)
         {
             Debug.Log("Timeout!");           
-            if(_revenue < MinRevenue)
+            if(_revenue < CurrentLevel.MinRevenue)
             {
                 _result = Result.LostEarnings;
-                nextRev = MinRevenue;
+                nextRev = CurrentLevel.MinRevenue;
             }
-            else if(_revenue < GoodRevenue)
+            else if(_revenue < CurrentLevel.GoodRevenue)
             {
                 _result = Result.WonBase;
-                nextRev = GoodRevenue;
+                nextRev = CurrentLevel.GoodRevenue;
             }
-            else if (_revenue < GreatRevenue)
+            else if (_revenue < CurrentLevel.GreatRevenue)
             {
                 _result = Result.WonGood;
-                nextRev = GreatRevenue;
+                nextRev = CurrentLevel.GreatRevenue;
             }
             else
             {
@@ -269,21 +373,21 @@ public class GameController : MonoBehaviour
         else
         {
             // requests check:
-            if(_requestIdx < NumRequests)
+            if(_requestIdx < CurrentLevel.NumClients)
             {
                 _requestElapsed += dt;
                 if(_requestElapsed >= _requestTimes[_requestIdx])
                 {
                     RequestData reqData = GenerateRequest();
-                    int slotIdx = ClientRequestSlots.FindIndex(x => !_requestAllocations.ContainsKey(x));
+                    int slotIdx = ActiveClientRequestSlots.FindIndex(x => !_requestAllocations.ContainsKey(x));
                     if(slotIdx < 0)
                     {
                         _stalledRequests.Enqueue(reqData);
                     }
                     else
                     {
-                        _requestAllocations[ClientRequestSlots[slotIdx]] = reqData;
-                        ClientRequestSlots[slotIdx].InitClient(this, reqData);
+                        _requestAllocations[ActiveClientRequestSlots[slotIdx]] = reqData;
+                        ActiveClientRequestSlots[slotIdx].InitClient(reqData);
                     }
                     _requestIdx++;
                 }
@@ -321,16 +425,16 @@ public class GameController : MonoBehaviour
                 }
             }
 
-            foreach(var resBuilding in ResourceBuildings)
+            foreach(var resBuilding in ActiveResourceBuildings)
             {
                 resBuilding.UpdateGame(dt);
             }
-            foreach (var recBuilding in RecipeBuildings)
+            foreach (var recBuilding in ActiveRecipeBuildings)
             {
                 recBuilding.UpdateGame(dt);
             }
 
-            foreach(var slot in ClientRequestSlots)
+            foreach(var slot in ActiveClientRequestSlots)
             {
                 slot.UpdateLogic(dt);
             }
@@ -340,15 +444,19 @@ public class GameController : MonoBehaviour
     private RequestData GenerateRequest()
     {
         List<ItemID> items = new List<ItemID>();
-        items.Add(OptionsItem1[URandom.Range(0, OptionsItem1.Count)]);
-        if(URandom.value < Chance2ItemRequest)
+        items.Add(CurrentLevel.ClientRequestsItemPoolItem1[URandom.Range(0, CurrentLevel.ClientRequestsItemPoolItem1.Count)]);
+        if(URandom.value < CurrentLevel.SpawnChanceSecondItem)
         {
-            items.Add(OptionsItem2[URandom.Range(0, OptionsItem2.Count)]);
+            var item = CurrentLevel.ClientRequestsItemPoolItem2[URandom.Range(0, CurrentLevel.ClientRequestsItemPoolItem2.Count)];
+            if(!items.Contains(item))
+            {
+                items.Add(item);
+            }
         }
         RequestData reqData = new RequestData()
         {
-            Timeout = URandom.Range(PatienceMin, PatienceMax),
-            ClientPrefab = ClientView[URandom.Range(0, ClientView.Count)],
+            Timeout = URandom.Range(CurrentLevel.PatienceMin, CurrentLevel.PatienceMax),
+            ClientPrefab = CurrentLevel.ClientViews[URandom.Range(0, CurrentLevel.ClientViews.Count)],
             TicketIdx = _requestIdx,
             Items = items
         };
@@ -405,7 +513,7 @@ public class GameController : MonoBehaviour
             return;           
         }
 
-        foreach(var slot in ClientRequestSlots)
+        foreach(var slot in ActiveClientRequestSlots)
         {
             if(!slot.Active)
             {
@@ -432,7 +540,7 @@ public class GameController : MonoBehaviour
     private SlotRecipesBuilding FindRecipeBuildingSlotForItemAtPosition(Vector2 pos, Item itemData, out Recipe recipeData)
     {
         recipeData = null;
-        foreach(var building in RecipeBuildings)
+        foreach(var building in ActiveRecipeBuildings)
         {
             SlotRecipesBuilding slot = building.FindSlotAtWithRequirement(pos, itemData, out recipeData);
             if(slot != null)
@@ -467,7 +575,7 @@ public class GameController : MonoBehaviour
         if(_stalledRequests.Count > 0)
         {
             data = _stalledRequests.Dequeue();
-            clientSlot.InitClient(this, data);
+            clientSlot.InitClient(data);
         }
     }
 
@@ -480,8 +588,13 @@ public class GameController : MonoBehaviour
         if (_stalledRequests.Count > 0)
         {
             var data = _stalledRequests.Dequeue();
-            clientSlot.InitClient(this, data);
+            clientSlot.InitClient(data);
         }
 
+    }
+
+    internal Recipe GetRecipe(RecipeID recipeID)
+    {
+        return RecipeDataList.Find(x => x.RecipeID == recipeID);
     }
 }

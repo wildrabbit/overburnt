@@ -17,24 +17,51 @@ public class ResourceBuilding : MonoBehaviour
     public GameController GameController;
   
     public List<SlotResourceBuilding> Slots;
+    List<SlotResourceBuilding> AvailableSlots;
 
-    public void GiveItem(Item item)
+    public void Init(GameController gameController)
     {
-        
+        GameController = gameController;
+        foreach(var s in Slots)
+        {
+            s.Init(this);
+        }
+        AvailableSlots = new List<SlotResourceBuilding>();
     }
 
-    internal void Reset()
+    public void LoadBuilding(ResourceBuildingInfo info)
     {
-        foreach (var slot in Slots)
+        gameObject.SetActive(true);
+        AvailableSlots.Clear();
+        foreach(var s in Slots)
         {
-            slot.Init(this);
+            if(info.Slots.Contains(s))
+            {
+                s.Load();
+                AvailableSlots.Add(s);
+            }
+            else
+            {
+                s.Unload();
+            }
         }
+    }
+
+    public void Unload()
+    {
+        gameObject.SetActive(false);
+        foreach(var slot in AvailableSlots)
+        {
+            slot.Unload();
+        }
+        AvailableSlots.Clear();
+
     }
 
     // Update is called once per frame
     public void UpdateGame(float dt)
     {
-        foreach (var slot in Slots)
+        foreach (var slot in AvailableSlots)
         {
             slot.UpdateSlot(dt);
         }

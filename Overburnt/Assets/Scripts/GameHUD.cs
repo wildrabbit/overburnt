@@ -30,12 +30,11 @@ public class GameHUD : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _timeLeft.text = FormatTime(_gameController.TimeLeft);
-        _income.text = _gameController.Earnings.ToString();
         _gameController.OnEarningsChanged += RefreshIncome;
         _gameController.OnFatigueChanged += RefreshFatigue;
-        _gameController.GameReset += OnReset;
+        _gameController.GameStarted += OnLevelStarted;
         _gameController.GameFinished += OnFinished ;
+        _gameController.GameReset += OnGameReset;
         _endPanel.SetActive(false);
     }
 
@@ -63,7 +62,12 @@ public class GameHUD : MonoBehaviour
         _nextBestRevenue.text = arg3.ToString();
     }
 
-    void OnReset()
+    void OnGameReset()
+    {
+
+    }
+
+    void OnLevelStarted(int levelIdx, LevelConfig leveConfig)
     {
         if(_endPanel.activeInHierarchy)
         {

@@ -6,39 +6,6 @@ using UnityEngine.EventSystems;
 
 public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickHandler, IPointerUpHandler, IPointerDownHandler
 {
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        if (_currentItem == null || _currentItem.InteractionType != InteractionType.Drag)
-        {
-            return;
-        }
-
-        if (!_dragging)
-        {
-            _dragging = true;
-            _dragStartPosition = Slot.transform.position;
-            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
-            Slot.transform.position = worldPos;
-            _gameController.DragItemStart(this, _currentItem, worldPos);
-        }
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        if (_currentItem == null || _currentItem.InteractionType != InteractionType.Drag)
-        {
-            return;
-        }
-
-        if (_dragging)
-        {
-            _dragging = false;
-            Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Slot.transform.position = worldPos;
-            _gameController.DragItemEnd(this, _currentItem, worldPos);
-        }
-    }
-
     public List<RecipeBuildingData> AllowedRecipes;
     public SpriteRenderer SlotBG;
     public SpriteRenderer Slot;
@@ -46,6 +13,8 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
     public TMPro.TextMeshPro Percent;
 
     public List<ItemID> _currentRequirements;
+
+    List<RecipeBuildingData> AvailableRecipes;
 
     Recipe _currentRecipe;
     Item _currentItem;
@@ -67,6 +36,12 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
     {
         _parent = parent;
         _gameController = parent.GameController;
+        AvailableRecipes = new List<RecipeBuildingData>();
+    }
+
+    public void Load(RecipeBuildingSlotInfo info)
+    {
+        gameObject.SetActive(true);
         _elapsed = 0;
         _dragging = false;
         _dragStartPosition = Vector2.zero;
@@ -81,7 +56,21 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
         Percent.gameObject.SetActive(false);
         var color = Slot.color;
         color.a = 1;
-        Slot.enabled = false;        
+        Slot.enabled = false;
+
+        AvailableRecipes.Clear();
+        foreach(var recipe in AllowedRecipes)
+        {
+            if(info.AvailableRecipes.Contains(recipe.Recipe))
+            {
+                AvailableRecipes.Add(recipe);
+            }
+        }
+    }
+
+    public void Unload()
+    {
+        gameObject.SetActive(false);
     }
 
     internal Recipe FindRecipeUsingItem(Item item)
@@ -93,7 +82,7 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
 
         bool pendingPickup = SlotStatus == RecipeSlotStatus.PickupPending;
         Recipe candidateRecipe = null;
-        foreach (var recipe in AllowedRecipes)
+        foreach (var recipe in AvailableRecipes)
         {
             Recipe recipeData = _gameController.GetRecipe(recipe.Recipe);
             if (!recipeData.Requirements.Contains(item.ItemID))
@@ -130,7 +119,7 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
 
     public bool ExistsRecipeWithItem(Item item)
     {
-        foreach(var recipe in AllowedRecipes)
+        foreach(var recipe in AvailableRecipes)
         {
             Recipe recipeData = _gameController.GetRecipe(recipe.Recipe);
             if(recipeData.Requirements.Contains(item.ItemID))
@@ -269,7 +258,7 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
             AddRequirement(_currentItem);
         }
 
-        var buildingRecipeData = AllowedRecipes.Find(x => x.Recipe == recipeData.RecipeID);
+        var buildingRecipeData = AvailableRecipes.Find(x => x.Recipe == recipeData.RecipeID);
         _currentSpawnTime = buildingRecipeData.Time;
 
         AddRequirement(itemData);
@@ -343,4 +332,38 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
         _currentRequirements.Clear();
         _currentSpawnTime = 0;
     }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (_currentItem == null || _currentItem.InteractionType != InteractionType.Drag)
+        {
+            return;
+        }
+
+        if (!_dragging)
+        {
+            _dragging = true;
+            _dragStartPosition = Slot.transform.position;
+            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
+            Slot.transform.position = worldPos;
+            _gameController.DragItemStart(this, _currentItem, worldPos);
+        }
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (_currentItem == null || _currentItem.InteractionType != InteractionType.Drag)
+        {
+            return;
+        }
+
+        if (_dragging)
+        {
+            _dragging = false;
+            Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Slot.transform.position = worldPos;
+            _gameController.DragItemEnd(this, _currentItem, worldPos);
+        }
+    }
+
 }

@@ -26,17 +26,25 @@ public class ClientSlot : MonoBehaviour
 
     public float TimeElapsed => _elapsed;
 
-    public void InitClient(GameController gameController, RequestData requestData)
+    public void Init(GameController gameController)
+    {
+        _gameController = gameController;
+    }
+
+    public void InitClient(RequestData requestData)
     {
         _requestData = requestData;
         _clientView = Instantiate(requestData.ClientPrefab, ClientRoot.transform);
-        _gameController = gameController;
         gameObject.SetActive(true);
         _requiredItems = new List<ItemID>(_requestData.Items);
         _elapsed = 0;
         _baseTimeout = requestData.Timeout;
         _ready = false;
+        UpdateIcons();        
+    }
 
+    public void UpdateIcons()
+    {
         bool firstItem = _requiredItems.Count > 0; ;
         Item1.enabled = firstItem;
         if (firstItem)
@@ -88,18 +96,20 @@ public class ClientSlot : MonoBehaviour
                 Item2.sprite = _gameController.GetItem(_requiredItems[1])?.Icon;
             if (_requiredItems.Count == 0)
             {
-                if(itemData.ClientWaitTimePercentRestored > 0)
-                {
-                    float AmountRestored = itemData.ClientWaitTimePercentRestored * 0.01f * _baseTimeout;
-                    _elapsed -= AmountRestored;
-                    if(_elapsed < 0)
-                    {
-                        _elapsed = 0;
-                    }
-                }
                 _gameController.RequestFulfilled(this);
                 // animate exit
                 Clear();
+            }
+            else if (itemData.ClientWaitTimePercentRestored > 0)
+            {
+                float AmountRestored = itemData.ClientWaitTimePercentRestored * 0.01f * _baseTimeout;
+                _elapsed -= AmountRestored;
+                if (_elapsed < 0)
+                {
+                    _elapsed = 0;
+                }
+                float ratio = (_elapsed / _baseTimeout);
+                ProgressBar.alphaCutoff = ratio;
             }
             return true;
         }
