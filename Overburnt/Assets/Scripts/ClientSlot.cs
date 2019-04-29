@@ -33,6 +33,7 @@ public class ClientSlot : MonoBehaviour
 
     public void InitClient(RequestData requestData)
     {
+        Clear();
         _requestData = requestData;
         _clientView = Instantiate(requestData.ClientPrefab, ClientRoot.transform);
         gameObject.SetActive(true);

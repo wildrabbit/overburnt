@@ -3752,7 +3752,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -5.3, y: -0.40000153}
+  m_AnchoredPosition: {x: -5.299999, y: -0.40000153}
   m_SizeDelta: {x: 200, y: 25}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1076323928
@@ -4268,6 +4268,9 @@ MonoBehaviour:
   GreatRevenue: 100
   ClientViews:
   - {fileID: 7840228020315824450, guid: eb0f86e55b30b744da958e8c1bd0c41d, type: 3}
+  - {fileID: 7840228020315824450, guid: 65ab400117e2c824196608f06e4959b3, type: 3}
+  - {fileID: 7840228020315824450, guid: 7900e65d43d29f4499b150426d0d52d2, type: 3}
+  - {fileID: 7840228020315824450, guid: 443b11d4ab29c654d85d2b5a616b5cbe, type: 3}
   ClientRequestsItemPoolItem1: 0600000005000000
   ClientRequestsItemPoolItem2: 02000000
   SpawnChanceSecondItem: 0.25
@@ -5019,7 +5022,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -6.2, y: 0}
+  m_AnchoredPosition: {x: -6.200001, y: 0}
   m_SizeDelta: {x: 200, y: 25}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1596012514
@@ -5714,7 +5717,12 @@ MonoBehaviour:
   GoodRevenue: 80
   GreatRevenue: 110
   ClientViews:
-  - {fileID: 7840228020315824450, guid: eb0f86e55b30b744da958e8c1bd0c41d, type: 3}
+  - {fileID: 8978941769251119426, guid: 050e8b5a819cf454bb03d4ab831c558d, type: 3}
+  - {fileID: 7840228020315824450, guid: 362774bc28177054e8c69b83a21a0b05, type: 3}
+  - {fileID: 7840228020315824450, guid: 65ab400117e2c824196608f06e4959b3, type: 3}
+  - {fileID: 7840228020315824450, guid: 7900e65d43d29f4499b150426d0d52d2, type: 3}
+  - {fileID: 7840228020315824450, guid: 443b11d4ab29c654d85d2b5a616b5cbe, type: 3}
+  - {fileID: 7840228020315824450, guid: a3173082cc8fbaf4c8f8b86d926c891b, type: 3}
   ClientRequestsItemPoolItem1: 060000000500000007000000
   ClientRequestsItemPoolItem2: 02000000
   SpawnChanceSecondItem: 0.25
@@ -5793,6 +5801,8 @@ MonoBehaviour:
   GreatRevenue: 50
   ClientViews:
   - {fileID: 7840228020315824450, guid: eb0f86e55b30b744da958e8c1bd0c41d, type: 3}
+  - {fileID: 7840228020315824450, guid: 362774bc28177054e8c69b83a21a0b05, type: 3}
+  - {fileID: 7840228020315824450, guid: 65ab400117e2c824196608f06e4959b3, type: 3}
   ClientRequestsItemPoolItem1: 0600000002000000
   ClientRequestsItemPoolItem2: 02000000
   SpawnChanceSecondItem: 0.25
@@ -6065,7 +6075,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -5.3, y: 0}
+  m_AnchoredPosition: {x: -5.299999, y: 0}
   m_SizeDelta: {x: 250, y: 25}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1780363821
