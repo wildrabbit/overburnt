@@ -25,6 +25,8 @@ public class GameHUD : MonoBehaviour
     public GameController _gameController;
     public TextMeshProUGUI _timeLeft;
     public TextMeshProUGUI _income;
+    public GameObject _targetRoot;
+    public TextMeshProUGUI _targetIncome;
     public TextMeshProUGUI _fatigue;
     [Header("Stage end")]
     public GameObject _endPanel;
@@ -164,6 +166,9 @@ public class GameHUD : MonoBehaviour
     void RefreshIncome(int newValue)
     {
         _income.text = newValue.ToString();
+        int target = _gameController.TargetIncome;
+        _targetRoot.SetActive(target >= 0);
+        _targetIncome.text = _gameController.TargetIncome.ToString();
     }
 
     private string FormatTime(float timeLeft)

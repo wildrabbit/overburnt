@@ -171,6 +171,25 @@ public class GameController : MonoBehaviour
     public float Fatigue => _fatigue;
     public int FatiguePercent => Mathf.RoundToInt(100 * _fatigue / MaxFatigue);
 
+    public int TargetIncome
+    {
+        get
+        {
+            if(_revenue < CurrentLevel.MinRevenue)
+            {
+                return CurrentLevel.MinRevenue;                
+            }
+            else if(_revenue < CurrentLevel.GoodRevenue)
+            {
+                return CurrentLevel.GoodRevenue;
+            }
+            else if(_revenue < CurrentLevel.GreatRevenue)
+            {
+                return CurrentLevel.GreatRevenue;
+            }
+            return -1;
+        }
+    }
     IItemGenerator _draggedItem;
     Item _itemData;
     int _numFailures;
@@ -347,6 +366,7 @@ public class GameController : MonoBehaviour
                         LevelIdx = 0;
                         Debug.Log("Level beaten!");
                         GameBeaten?.Invoke(LevelResumeTime);
+                        InitLevel(LevelList[LevelIdx]);
                     }
                     else
                     {
