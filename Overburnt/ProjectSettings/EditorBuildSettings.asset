@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Howto.unity
     guid: 4ec867f54e3af264395e38b78cb7964d
   - enabled: 1
+    path: Assets/Scenes/Recipes.unity
+    guid: d4af2252e94623d488c0a728ab70acc9
+  - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: 001a5e0e8b4203f46a01b601f162909e
   m_configObjects: {}

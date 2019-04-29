@@ -317,7 +317,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InputText: {fileID: 1369199656}
   Delay: 2
-  NextScene: Recipes
+  NextScene: Game
   ConfirmSound: {fileID: 386247798}
 --- !u!114 &386247800
 MonoBehaviour:
@@ -557,7 +557,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 59}
+  m_AnchoredPosition: {x: 0, y: 24}
   m_SizeDelta: {x: 600, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1203949827
@@ -580,28 +580,19 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: 'So you''re the new assistant, huh? Let''s hope you last more than the last
-    one.
+  m_text: '<size=240%><sprite name=iron></size> ==> <space=1em><size=240%><sprite
+    name=iron_container></size> = <space=2em><size=340%><sprite name=iron_sword></size>
+
+    <size=240%><sprite name=wood></size> ==> <space=1em><size=240%><sprite name=iron_container></size>
+    = <space=2em><size=340%><sprite name=wooden_sword></size>
+
+    <size=240%><sprite name=iron></size> + <space=1em><size=240%><sprite name=wood></size>
+    ==> <space=1em><size=380%><sprite name=spear_container></size> = <space=2em><size=440%><sprite
+    name=spear></size> (Order doesn''t matter)
 
 
-    Task is simple: Heroes drop by with requests you''ll need to fulfill in time.
-    To do so, <b><color=#E8B796>drag</color></b> the item(s) they need from nodes
-    to character faces.
-
-
-    You may need to <b><color=#E8B796>combine</color></b> multiple items to obtain
-    another one. <b><color=#E8B796>Drag</color></b> resources <space=3em><size=140%><sprite
-    index=0></size>to slot nodes <size=140%><space=4em><sprite index=2></size>.
-
-
-    Take a rest from time to time to recover from <color=#8000FF>FATIGUE</color>,
-    but don''t rest in your laurels.  If you don''t meet the basic target for a day
-    you''ll be <color=#FF8000>FIRED</color>.
-
-    If you pass away you''ll also be <color=#FF8000>FIRED</color>.
-
-
-    And now scram!'
+    Note: On certain levels you can get rid of unwanted items by dragging them to
+    the wasteland <space=1em><size=180%><sprite name=dispose></size>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 936727a4672367e41b742d9cf1974126, type: 2}
   m_sharedMaterial: {fileID: -2583971752865438426, guid: 936727a4672367e41b742d9cf1974126,
@@ -637,7 +628,7 @@ MonoBehaviour:
   m_fontSizeMin: 0
   m_fontSizeMax: 0
   m_fontStyle: 0
-  m_textAlignment: 257
+  m_textAlignment: 514
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -647,7 +638,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: 320
+  m_firstOverflowCharacterIndex: 38
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -671,12 +662,12 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1203949827}
-    characterCount: 525
+    characterCount: 157
     spriteCount: 0
-    spaceCount: 104
-    wordCount: 100
+    spaceCount: 38
+    wordCount: 21
     linkCount: 0
-    lineCount: 16
+    lineCount: 6
     pageCount: 1
     materialCount: 2
   m_isUsingLegacyAnimationComponent: 0
@@ -993,7 +984,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: HOW TO PLAY
+  m_text: RECIPES
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 29919cc44bb1fd34ea416daa8ee3d498, type: 2}
   m_sharedMaterial: {fileID: -9052774567596385994, guid: 29919cc44bb1fd34ea416daa8ee3d498,
@@ -1029,7 +1020,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_textAlignment: 257
+  m_textAlignment: 258
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -1063,10 +1054,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 1748011304}
-    characterCount: 11
+    characterCount: 7
     spriteCount: 0
-    spaceCount: 2
-    wordCount: 3
+    spaceCount: 0
+    wordCount: 1
     linkCount: 0
     lineCount: 1
     pageCount: 1

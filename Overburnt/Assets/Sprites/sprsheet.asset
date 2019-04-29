@@ -56,50 +56,50 @@ MonoBehaviour:
     m_Unicode: 0
     m_GlyphIndex: 0
     m_Scale: 1
-    m_Name: sprsheet_2
-    m_HashCode: 1027415571
+    m_Name: wood
+    m_HashCode: 4243795
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 1
     m_Scale: 1
-    m_Name: sprsheet_3
-    m_HashCode: 1027415570
+    m_Name: iron_sword
+    m_HashCode: 1433945976
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 2
     m_Scale: 1
-    m_Name: sprsheet_0
-    m_HashCode: 1027415569
+    m_Name: iron_container
+    m_HashCode: 1822909986
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 3
     m_Scale: 1
-    m_Name: sprsheet_1
-    m_HashCode: 1027415568
+    m_Name: dispose
+    m_HashCode: 1248969271
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 4
     m_Scale: 1
-    m_Name: sprsheet_7
-    m_HashCode: 1027415574
+    m_Name: iron
+    m_HashCode: 3896282
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 5
     m_Scale: 1
-    m_Name: sprsheet_6
-    m_HashCode: 1027415575
+    m_Name: wooden_sword
+    m_HashCode: -451347750
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 6
     m_Scale: 1
-    m_Name: sprsheet_5
-    m_HashCode: 1027415572
+    m_Name: spear
+    m_HashCode: 134764885
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 7
     m_Scale: 1
-    m_Name: sprsheet_4
-    m_HashCode: 1027415573
+    m_Name: spear_container
+    m_HashCode: 1939225837
   m_SpriteGlyphTable:
   - m_Index: 0
     m_Metrics:
