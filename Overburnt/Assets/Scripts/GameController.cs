@@ -378,6 +378,7 @@ public class GameController : MonoBehaviour
                 }
                 else
                 {
+                    StartFatigue = 0;
                     Debug.Log("Replaying!");
                     GameReset?.Invoke();
                     InitLevel(LevelList[LevelIdx]);
