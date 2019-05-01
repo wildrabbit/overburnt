@@ -17,12 +17,15 @@ public class ResultData
 public class GameHUD : MonoBehaviour
 {
     public List<ResultData> Results;
-
     public List<Sprite> FatigueMappings;
+    public GameController _gameController;
+
+    [Header("Panel data")]
+    public Sprite _musicOn;
+    public Sprite _musicOff;
+    public Image _musicBtnImage;
 
     public Image _characterExpression;
-
-    public GameController _gameController;
     public TextMeshProUGUI _timeLeft;
     public TextMeshProUGUI _income;
     public GameObject _targetRoot;
@@ -70,9 +73,24 @@ public class GameHUD : MonoBehaviour
 
     private void OnGameBeaten(float delay)
     {
+        if(_endPanel.activeInHierarchy)
+        {
+            _endPanel.SetActive(false);
+        }
         GameBeaten.gameObject.SetActive(true);
         GameBeatenInputHint.gameObject.SetActive(false);
         StartCoroutine(DelayedShow(GameBeatenInputHint, delay));
+    }
+
+    void RefreshMusicToggle()
+    {
+        _musicBtnImage.sprite = (AudioListener.pause) ? _musicOff:_musicOn;
+    }
+
+    public void OnMusicToggleClicked()
+    {
+        AudioListener.pause = !AudioListener.pause;
+        RefreshMusicToggle();
     }
 
     void RefreshFatigue(int percent)
@@ -128,7 +146,8 @@ public class GameHUD : MonoBehaviour
 
     void OnLevelStarted(int levelIdx, LevelConfig leveConfig, float startDelay)
     {
-        if(_endPanel.activeInHierarchy)
+        RefreshMusicToggle();
+        if (_endPanel.activeInHierarchy)
         {
             _endPanel.SetActive(false);
         }
