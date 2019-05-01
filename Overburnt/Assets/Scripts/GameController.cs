@@ -325,12 +325,11 @@ public class GameController : MonoBehaviour
 
         _stalledRequests = new Queue<RequestData>();
 
-        GameStarted?.Invoke(LevelIdx, CurrentLevel, SecondsToGameStart);
-
         _dragging = false;
         _fatigue = StartFatigue;
         _elapsedSinceLastDragFinished = -1.0f;
 
+        GameStarted?.Invoke(LevelIdx, CurrentLevel, SecondsToGameStart);
         _startReady = false;
         StartCoroutine(DelayedReady());
     }
@@ -360,19 +359,29 @@ public class GameController : MonoBehaviour
             {
                 if(_result != Result.Running && _result != Result.LostEarnings && _result != Result.LostExhaustion)
                 {
-                    LevelIdx++;
-                    if(LevelIdx == LevelList.Count)
+                    if(LevelIdx < LevelList.Count)
                     {
-                        LevelIdx = 0;
-                        Debug.Log("Level beaten!");
-                        GameBeaten?.Invoke(LevelResumeTime);
-                        InitLevel(LevelList[LevelIdx]);
+                        LevelIdx++;
+
+                        if (LevelIdx == LevelList.Count)
+                        {
+                            LevelIdx = 0;
+                            _gameTimerElapsed = Time.time;
+                            Debug.Log("Level beaten!");
+                            GameBeaten?.Invoke(LevelResumeTime);
+                        }
+                        else
+                        {
+                            CheckStartFatigue();
+                            Debug.Log("Next level!");
+                            GameReset?.Invoke();
+                            InitLevel(LevelList[LevelIdx]);
+                        }
                     }
                     else
                     {
-                        CheckStartFatigue();
-                        Debug.Log("Next level!");
-                        GameReset?.Invoke();
+                        LevelIdx = 0;
+                        StartFatigue = 0;
                         InitLevel(LevelList[LevelIdx]);
                     }
                 }

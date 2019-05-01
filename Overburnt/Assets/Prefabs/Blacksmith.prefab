@@ -117,11 +117,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2244587131599345833, guid: 29f1bb105071ef24daf00fc4a294537d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -2
-      objectReference: {fileID: 0}
     - target: {fileID: 4742220795419715688, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: AllowedRecipes.Array.size
@@ -167,6 +162,17 @@ PrefabInstance:
       propertyPath: AllowedRecipes.Array.data[3].Time
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2244587131599345833, guid: 29f1bb105071ef24daf00fc4a294537d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5585016008171557232, guid: 29f1bb105071ef24daf00fc4a294537d,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e8f15dcd13f0e0846bd803c10d25a5e1,
+        type: 3}
     - target: {fileID: 6464062877424451201, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -239,12 +245,21 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5585016008171557232, guid: 29f1bb105071ef24daf00fc4a294537d,
+    - target: {fileID: 6164803081480710971, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: e8f15dcd13f0e0846bd803c10d25a5e1,
+      propertyPath: m_SortingOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 847413781158386670, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 847413781158386670, guid: 29f1bb105071ef24daf00fc4a294537d,
+        type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.y
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 9131324392391971844, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -285,16 +300,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.y
       value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 847413781158386670, guid: 29f1bb105071ef24daf00fc4a294537d,
-        type: 3}
-      propertyPath: m_SpriteTilingProperty.oldSize.x
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 847413781158386670, guid: 29f1bb105071ef24daf00fc4a294537d,
-        type: 3}
-      propertyPath: m_SpriteTilingProperty.oldSize.y
-      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29f1bb105071ef24daf00fc4a294537d, type: 3}
@@ -383,11 +388,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2244587131599345833, guid: 29f1bb105071ef24daf00fc4a294537d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -2
-      objectReference: {fileID: 0}
     - target: {fileID: 4742220795419715688, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: AllowedRecipes.Array.size
@@ -413,6 +413,17 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -0.07
       objectReference: {fileID: 0}
+    - target: {fileID: 2244587131599345833, guid: 29f1bb105071ef24daf00fc4a294537d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5585016008171557232, guid: 29f1bb105071ef24daf00fc4a294537d,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c8aba9c6256737d4dad916848d650a3e,
+        type: 3}
     - target: {fileID: 6464062877424451201, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -490,12 +501,16 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5585016008171557232, guid: 29f1bb105071ef24daf00fc4a294537d,
+    - target: {fileID: 6164803081480710971, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: c8aba9c6256737d4dad916848d650a3e,
+      propertyPath: m_SortingOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 847413781158386670, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 9131324392391971844, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -535,11 +550,6 @@ PrefabInstance:
     - target: {fileID: 8668336218157231487, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.y
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 847413781158386670, guid: 29f1bb105071ef24daf00fc4a294537d,
-        type: 3}
-      propertyPath: m_SpriteTilingProperty.oldSize.x
       value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -629,11 +639,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2244587131599345833, guid: 29f1bb105071ef24daf00fc4a294537d,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -2
-      objectReference: {fileID: 0}
     - target: {fileID: 4742220795419715688, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: AllowedRecipes.Array.size
@@ -654,6 +659,17 @@ PrefabInstance:
       propertyPath: AllowedRecipes.Array.data[1].Recipe
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 2244587131599345833, guid: 29f1bb105071ef24daf00fc4a294537d,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5585016008171557232, guid: 29f1bb105071ef24daf00fc4a294537d,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c8aba9c6256737d4dad916848d650a3e,
+        type: 3}
     - target: {fileID: 6464062877424451201, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -726,12 +742,16 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5585016008171557232, guid: 29f1bb105071ef24daf00fc4a294537d,
+    - target: {fileID: 6164803081480710971, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: c8aba9c6256737d4dad916848d650a3e,
+      propertyPath: m_SortingOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 847413781158386670, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 9131324392391971844, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -771,11 +791,6 @@ PrefabInstance:
     - target: {fileID: 8668336218157231487, guid: 29f1bb105071ef24daf00fc4a294537d,
         type: 3}
       propertyPath: m_SpriteTilingProperty.oldSize.y
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 847413781158386670, guid: 29f1bb105071ef24daf00fc4a294537d,
-        type: 3}
-      propertyPath: m_SpriteTilingProperty.oldSize.x
       value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
