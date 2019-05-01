@@ -365,7 +365,6 @@ public class GameController : MonoBehaviour
 
                         if (LevelIdx == LevelList.Count)
                         {
-                            LevelIdx = 0;
                             _gameTimerElapsed = Time.time;
                             Debug.Log("Level beaten!");
                             GameBeaten?.Invoke(LevelResumeTime);
