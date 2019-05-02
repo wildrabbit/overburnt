@@ -426,8 +426,9 @@ public class GameController : MonoBehaviour
                 _result = Result.LostExhaustion; // Override to avoid several ifs above.
             }
 
-            GameFinished?.Invoke(_result, _revenue, nextRev, LevelResumeTime);
             _finished = true;
+            GameFinished?.Invoke(_result, _revenue, nextRev, LevelResumeTime);
+           
             _gameTimerElapsed = Time.time;
         }
         else
@@ -646,6 +647,11 @@ public class GameController : MonoBehaviour
 
     public void RequestFulfilled(ClientSlot clientSlot)
     {
+        if(_finished)
+        {
+            return;
+        }
+
         var data = _requestAllocations[clientSlot];
         float timeLeftPercent = 100 * (1 - clientSlot.TimeElapsed / data.Timeout);
         int revenue = 0;
@@ -677,6 +683,11 @@ public class GameController : MonoBehaviour
 
     internal void ClientRequestFailed(ClientSlot clientSlot)
     {
+        if (_finished)
+        {
+            return;
+        }
+
         var reqData = _requestAllocations[clientSlot];
         int revenue = 0;
         foreach(var itemID in reqData.Items)

@@ -21,9 +21,7 @@ public class GameHUD : MonoBehaviour
     public GameController _gameController;
 
     [Header("Panel data")]
-    public Sprite _musicOn;
-    public Sprite _musicOff;
-    public Image _musicBtnImage;
+    public MusicToggle MusicToggle;
 
     public Image _characterExpression;
     public TextMeshProUGUI _timeLeft;
@@ -82,16 +80,7 @@ public class GameHUD : MonoBehaviour
         StartCoroutine(DelayedShow(GameBeatenInputHint, delay));
     }
 
-    void RefreshMusicToggle()
-    {
-        _musicBtnImage.sprite = (AudioListener.pause) ? _musicOff:_musicOn;
-    }
 
-    public void OnMusicToggleClicked()
-    {
-        AudioListener.pause = !AudioListener.pause;
-        RefreshMusicToggle();
-    }
 
     void RefreshFatigue(int percent)
     {
@@ -146,7 +135,7 @@ public class GameHUD : MonoBehaviour
 
     void OnLevelStarted(int levelIdx, LevelConfig leveConfig, float startDelay)
     {
-        RefreshMusicToggle();
+        MusicToggle?.RefreshMusicToggle();
         if (_endPanel.activeInHierarchy)
         {
             _endPanel.SetActive(false);
