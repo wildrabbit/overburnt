@@ -138,18 +138,13 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
             OnDrag(Camera.main.ScreenToWorldPoint(mousePos));
         }
 
-        if (SlotStatus == RecipeSlotStatus.Generating)
+        if (SlotStatus == RecipeSlotStatus.Generating && _elapsed < _currentSpawnTime)
         {
             Percent.text = $"{(int)(100 * _elapsed / _currentSpawnTime)}%";
-            if (Mathf.Approximately(_elapsed, _currentSpawnTime))
-            {
-                return;
-            }
             _elapsed += dt;
             if (_elapsed >= _currentSpawnTime)
+
             {
-                _elapsed = _currentSpawnTime;
-                Debug.Log($"recipe {_currentRecipe.Name} available!");
                 StartCoroutine(PrepareReady());
             }
         }
@@ -158,8 +153,12 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
     IEnumerator PrepareReady()
     {
         yield return new WaitForSeconds(0.1f);
+        PrepareReadyFunc();
+    }
+
+    void PrepareReadyFunc()
+    {
         _currentItem = _gameController.GetItem(_currentRecipe.OutputItem);
-        Debug.Log($"Ready {_currentItem.Name} item");
         _currentRequirements.Clear();
         _currentRecipe = null;
         _currentSpawnTime = 0;
@@ -229,7 +228,10 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
             Slot.color = color;
             SlotStatus = RecipeSlotStatus.Generating;
         }
-        else yield return PrepareReady();
+        else
+        {
+            yield return PrepareReady();
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -322,8 +324,6 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
 
     public void ClearContents()
     {
-        Debug.Log($"Cleared!");
-
         ResetSlot();
         Slot.sprite = null;
         SlotStatus = RecipeSlotStatus.AwaitingRequirements;
@@ -340,7 +340,7 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
             return;
         }
 
-        if (!_dragging)
+        if (!_dragging &&  SlotStatus != RecipeSlotStatus.Generating)
         {
             _dragging = true;
             _dragStartPosition = Slot.transform.position;
