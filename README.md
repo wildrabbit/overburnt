@@ -1,2 +1,3 @@
-# overburnt
-LD44 (Your life is currency) - Cooking + time/stamina mgmt game.
+# Overburnt
+LD44 (Your life is currency) - Fantasy town errand boy sim + time management game.
+

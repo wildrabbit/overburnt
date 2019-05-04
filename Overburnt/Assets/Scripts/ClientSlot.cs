@@ -16,7 +16,7 @@ public class ClientSlot : MonoBehaviour
 
     float _elapsed;
     float _baseTimeout;
-    bool _ready;
+    bool _requestFinished;
 
     GameController _gameController;
     List<ItemID> _requiredItems;
@@ -40,7 +40,7 @@ public class ClientSlot : MonoBehaviour
         _requiredItems = new List<ItemID>(_requestData.Items);
         _elapsed = 0;
         _baseTimeout = requestData.Timeout;
-        _ready = false;
+        _requestFinished = false;
         UpdateIcons();        
     }
 
@@ -67,7 +67,7 @@ public class ClientSlot : MonoBehaviour
     // Update is called once per frame
     public void UpdateLogic(float dt)
     {
-        if(!_ready && Active)
+        if(!_requestFinished && Active)
         {
             _elapsed += dt;
             if(_elapsed >= _baseTimeout)

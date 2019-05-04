@@ -115,6 +115,15 @@ public class RequestData
     public GameObject ClientPrefab;
     public List<ItemID> Items;
     public float Timeout;
+
+    public override string ToString()
+    {
+        System.Text.StringBuilder builder = new System.Text.StringBuilder();
+        var itemValues = Items.ConvertAll(x => x.ToString()).ToArray();
+
+        builder.Append($"[Client request ID:{TicketIdx}, Items: [{String.Join(",", itemValues)}]");
+        return builder.ToString();
+    }
 }
 
 public class GameController : MonoBehaviour
@@ -210,7 +219,6 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Init!");
         InitGame();
         ResetGame();
         InitLevel(LevelList[LevelIdx]);
@@ -364,21 +372,18 @@ public class GameController : MonoBehaviour
                     if(LevelIdx == LevelList.Count)
                     {
                         LevelIdx = 0;
-                        Debug.Log("Level beaten!");
                         GameBeaten?.Invoke(LevelResumeTime);
                         InitLevel(LevelList[LevelIdx]);
                     }
                     else
                     {
                         CheckStartFatigue();
-                        Debug.Log("Next level!");
                         GameReset?.Invoke();
                         InitLevel(LevelList[LevelIdx]);
                     }
                 }
                 else
                 {
-                    Debug.Log("Replaying!");
                     GameReset?.Invoke();
                     InitLevel(LevelList[LevelIdx]);
                 }
@@ -391,7 +396,6 @@ public class GameController : MonoBehaviour
 
         if (_gameTimerElapsed >= CurrentLevel.LevelTimeSeconds || exhausted)
         {
-            Debug.Log("Timeout!");           
             if(_revenue < CurrentLevel.MinRevenue)
             {
                 _result = Result.LostEarnings;
@@ -656,7 +660,6 @@ public class GameController : MonoBehaviour
 
         _revenue += Mathf.FloorToInt(modifiedRevenue);
         OnEarningsChanged?.Invoke(_revenue);
-        Debug.Log($"Request {data.TicketIdx} succeeded. Revenue: {revenue} (Total: {_revenue})");
         _requestAllocations.Remove(clientSlot);
 
         if(_stalledRequests.Count > 0)
@@ -681,7 +684,6 @@ public class GameController : MonoBehaviour
             _revenue = 0;
         }
 
-        Debug.Log($"Request {reqData.TicketIdx} failed. Contents: {reqData.Items}");
         _numFailures++;
         _requestAllocations.Remove(clientSlot);
         if (_stalledRequests.Count > 0)
