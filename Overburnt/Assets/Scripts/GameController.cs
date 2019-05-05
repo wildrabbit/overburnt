@@ -158,6 +158,8 @@ public class GameController : MonoBehaviour
 
     [Header("Misc")]
     public float LevelResumeTime;
+    public Vector3 DragScaleOffset = new Vector3(1.3f, 1.3f, 1);
+    public Vector2 DragPosOffset = new Vector2(0.0f, 0.5f);
 
     bool _dragging;
     float _elapsedSinceLastDragFinished = -1;    
@@ -205,6 +207,7 @@ public class GameController : MonoBehaviour
     private Result _result;
 
     public event Action<int> OnEarningsChanged;
+    public event Action<ClientSlot, int, int> OnClientRevenueAction;
     public event Action GameReset;
     public event Action<Result,int,int, float> GameFinished;
     public event Action<int> OnFatigueChanged;
@@ -561,8 +564,6 @@ public class GameController : MonoBehaviour
     {
         _dragging = true;
         _elapsedSinceLastDragFinished = -1;
-
-        slotResourceBuilding.DoDragStart(pos);
     }
 
     public void DragItemEnd(IItemGenerator slotResourceBuilding, Item itemData, Vector2 pos)
@@ -570,7 +571,6 @@ public class GameController : MonoBehaviour
         _dragging = false;
         _elapsedSinceLastDragFinished = 0;
 
-        slotResourceBuilding.DoDragEnd(pos);
         // Valid  resource generator?
         Recipe recipeData;
         bool clear = true;
@@ -646,7 +646,6 @@ public class GameController : MonoBehaviour
 
     public void DragItem(IItemGenerator slotResourceBuilding, Item itemData, Vector2 pos)
     {
-        slotResourceBuilding.DoDrag(pos);
     }
 
     public void RequestFulfilled(ClientSlot clientSlot)

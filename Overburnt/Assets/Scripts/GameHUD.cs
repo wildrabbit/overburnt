@@ -29,6 +29,11 @@ public class GameHUD : MonoBehaviour
     public GameObject _targetRoot;
     public TextMeshProUGUI _targetIncome;
     public TextMeshProUGUI _fatigue;
+
+    public CoinResourceLabel _coinResourcePrefab;
+
+    List<CoinResourceLabel> _coinInstances;
+
     [Header("Stage end")]
     public GameObject _endPanel;
     public GameObject _nextRoot;
@@ -54,6 +59,7 @@ public class GameHUD : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        _gameController.OnClientRevenueAction += ShowRevenueDelta;
         _gameController.OnEarningsChanged += RefreshIncome;
         _gameController.OnFatigueChanged += RefreshFatigue;
         _gameController.GameStarted += OnLevelStarted;
@@ -62,6 +68,11 @@ public class GameHUD : MonoBehaviour
         _gameController.GameReady += OnGameReady;
         _gameController.GameBeaten += OnGameBeaten;
         _endPanel.SetActive(false);
+    }
+
+    private void ShowRevenueDelta(ClientSlot clientSlot, int delta, int tipDelta)
+    {
+        throw new NotImplementedException();
     }
 
     private void OnGameReady()

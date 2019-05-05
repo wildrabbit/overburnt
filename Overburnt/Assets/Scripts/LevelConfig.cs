@@ -9,12 +9,6 @@ public class ResourceBuildingInfo
     public List<SlotResourceBuilding> Slots;
 }
 
-[System.Serializable]
-public class RecipeBuildingSlotInfo
-{
-    public SlotRecipesBuilding Slot;
-    public List<RecipeID> AvailableRecipes; //Subset of the slot's recipes
-}
 
 [System.Serializable]
 public class RecipeBuildingInfo

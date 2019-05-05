@@ -604,7 +604,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.2113125, y: 0.32983336}
   m_AnchorMax: {x: 0.81575006, y: 0.81458336}
-  m_AnchoredPosition: {x: 1.300003, y: 1.199997}
+  m_AnchoredPosition: {x: 1.2998047, y: 1.1999512}
   m_SizeDelta: {x: 1.300003, y: -1.699997}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &196970115
@@ -2098,6 +2098,7 @@ RectTransform:
   - {fileID: 878366713}
   - {fileID: 1596680722}
   - {fileID: 196970114}
+  - {fileID: 1998948085}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2978,7 +2979,7 @@ MonoBehaviour:
   - {fileID: 766956542}
   AllDisposalFacilities:
   - {fileID: 151148925}
-  LevelIdx: 0
+  LevelIdx: 2
   CurrentLevel: {fileID: 0}
   StartFatigue: 0
   MaxFatigue: 100
@@ -3000,6 +3001,8 @@ MonoBehaviour:
   - TimeLeftThresholdValue: 100
     ExtraPercent: 1.3
   LevelResumeTime: 3
+  DragScaleOffset: {x: 1.4, y: 1.4, z: 1}
+  DragPosOffset: {x: 0, y: 1}
   SecondsToGameStart: 2
 --- !u!1 &819000321
 GameObject:
@@ -3331,7 +3334,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.056847222, y: 0.5}
   m_AnchorMax: {x: 0.945882, y: 0.8483413}
-  m_AnchoredPosition: {x: -0.5, y: -1.199997}
+  m_AnchoredPosition: {x: -0.5, y: -1.2000122}
   m_SizeDelta: {x: -2.7000122, y: 3.0400085}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &927834849
@@ -4052,7 +4055,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -5.2999268, y: -0.4000244}
+  m_AnchoredPosition: {x: -5.2998047, y: -0.39990234}
   m_SizeDelta: {x: 200, y: 25}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1076323928
@@ -4552,7 +4555,7 @@ MonoBehaviour:
     - Slot: {fileID: 1858287789}
       AvailableRecipes: 00000000
     - Slot: {fileID: 357449990}
-      AvailableRecipes: 01000000020000000300000004000000
+      AvailableRecipes: 03000000010000000200000004000000
     - Slot: {fileID: 241736786}
       AvailableRecipes: 00000000
   ActiveSlots:
@@ -5326,7 +5329,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.165}
   m_AnchorMax: {x: 1, y: 0.34}
-  m_AnchoredPosition: {x: 0, y: 0.77996826}
+  m_AnchoredPosition: {x: 0, y: 0.77978516}
   m_SizeDelta: {x: 0, y: 0.6300001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1482489142
@@ -5606,7 +5609,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -6.2000732, y: 0}
+  m_AnchoredPosition: {x: -6.2001953, y: 0}
   m_SizeDelta: {x: 200, y: 25}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1596012514
@@ -6516,7 +6519,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.056847222, y: 0.13865876}
   m_AnchorMax: {x: 0.945882, y: 0.5}
-  m_AnchoredPosition: {x: -0.5, y: -0.19999695}
+  m_AnchoredPosition: {x: -0.5, y: -0.19995117}
   m_SizeDelta: {x: -2.7000008, y: -5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1762233394
@@ -6675,7 +6678,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -5.2999268, y: 0}
+  m_AnchoredPosition: {x: -5.2998047, y: 0}
   m_SizeDelta: {x: 250, y: 25}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1780363821
@@ -7595,6 +7598,41 @@ MonoBehaviour:
   LevelLostTrack: {fileID: 8300000, guid: 2ba4d7b5aa062ff4090137ea9c360fec, type: 3}
   GameWonTrack: {fileID: 8300000, guid: 994d1592aa9c5c045b247e74953af4c5, type: 3}
   GameController: {fileID: 818369145}
+--- !u!1 &1998948084
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1998948085}
+  m_Layer: 5
+  m_Name: EarningsContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1998948085
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1998948084}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 712119191}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2030540936 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1634401453512276380, guid: 2109e659e2d26ff4c9513689f2da2c5b,

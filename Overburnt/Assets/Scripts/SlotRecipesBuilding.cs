@@ -1,86 +1,71 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickHandler, IPointerUpHandler, IPointerDownHandler
+public class SlotRecipesBuilding : BaseSlot
 {
     public List<RecipeBuildingData> AllowedRecipes;
-    public SpriteRenderer SlotBG;
-    public SpriteRenderer Slot;
-    public Collider2D CollisionArea;
-    public TMPro.TextMeshPro Percent;
-
-    public List<ItemID> _currentRequirements;
-
+    List<ItemID> _currentRequirements;
     List<RecipeBuildingData> AvailableRecipes;
 
     Recipe _currentRecipe;
     Item _currentItem;
-    float _elapsed;
-    float _currentSpawnTime;
+    RecipeBuildingSlotInfo _recipeSlotData;
 
-    public RecipeSlotStatus SlotStatus;
-    
-    RecipesBuilding _parent;
-    GameController _gameController;
-
-    bool _dragging;
-    Vector2 _dragStartPosition;
-
-    public bool MissingRecipe => _currentRecipe == null;
-   
-
-    public void Init(RecipesBuilding parent)
+    public override Item SlotItem
     {
-        _parent = parent;
-        _gameController = parent.GameController;
+        get => _currentItem;
+        set => _currentItem = value;
+    }
+    public bool MissingRecipe => _currentRecipe == null;
+
+    protected override void DoInit()
+    {
         AvailableRecipes = new List<RecipeBuildingData>();
     }
 
-    public void Load(RecipeBuildingSlotInfo info)
-    {
-        gameObject.SetActive(true);
-        _elapsed = 0;
-        _dragging = false;
-        _dragStartPosition = Vector2.zero;
 
+    public void ApplyOverrides(RecipeBuildingSlotInfo overrideSlotData)
+    {
+        _recipeSlotData = overrideSlotData;
+    }
+
+    protected override void DoLoad()
+    {
         _currentRecipe = null;
         _currentItem = null;
         _currentRequirements = new List<ItemID>();
         _currentSpawnTime = 0;
 
-        Slot.enabled = false;
-        SlotStatus = RecipeSlotStatus.AwaitingRequirements;
+        _slotStatus = SlotStatus.AwaitingRequirements;
         Percent.gameObject.SetActive(false);
-        var color = Slot.color;
+        var color = SlotContents.color;
         color.a = 1;
-        Slot.enabled = false;
+        SlotContents.enabled = false;
 
         AvailableRecipes.Clear();
         foreach(var recipe in AllowedRecipes)
         {
-            if(info.AvailableRecipes.Contains(recipe.Recipe))
+            if(_recipeSlotData.AvailableRecipes.Contains(recipe.Recipe))
             {
                 AvailableRecipes.Add(recipe);
             }
         }
     }
 
-    public void Unload()
+    protected override void DoUnload()
     {
         gameObject.SetActive(false);
     }
 
     internal Recipe FindRecipeUsingItem(Item item)
     {
-        if (SlotStatus == RecipeSlotStatus.Generating)
+        if (_slotStatus == SlotStatus.Busy)
         {
             return null;
         }
 
-        bool pendingPickup = SlotStatus == RecipeSlotStatus.PickupPending;
+        bool pendingPickup = _slotStatus == SlotStatus.ItemReady;
         Recipe candidateRecipe = null;
         foreach (var recipe in AvailableRecipes)
         {
@@ -129,47 +114,19 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
         }
         return false;
     }
-
-    public void UpdateSlot(float dt)
+    
+    protected override void SetLogicReady()
     {
-        if (_dragging)
-        {
-            Vector2 mousePos = Input.mousePosition;
-            OnDrag(Camera.main.ScreenToWorldPoint(mousePos));
-        }
-
-        if (SlotStatus == RecipeSlotStatus.Generating && _elapsed < _currentSpawnTime)
-        {
-            Percent.text = $"{(int)(100 * _elapsed / _currentSpawnTime)}%";
-            _elapsed += dt;
-            if (_elapsed >= _currentSpawnTime)
-
-            {
-                StartCoroutine(PrepareReady());
-            }
-        }
-    }
-
-    IEnumerator PrepareReady()
-    {
-        yield return new WaitForSeconds(0.1f);
-        PrepareReadyFunc();
-    }
-
-    void PrepareReadyFunc()
-    {
+        base.SetLogicReady();
         _currentItem = _gameController.GetItem(_currentRecipe.OutputItem);
         _currentRequirements.Clear();
         _currentRecipe = null;
         _currentSpawnTime = 0;
-        Percent.gameObject.SetActive(false);
-        _elapsed = 0;
-        var color = Slot.color;
-        color.a = 1;
-        Slot.enabled = true;
-        Slot.sprite = _currentItem.Icon;
-        Slot.color = color;
-        SlotStatus = RecipeSlotStatus.PickupPending;
+    }
+
+    protected override void SetViewReady()
+    {
+        base.SetViewReady();
         // if incomplete and there is any recipe here targetting the final item we can change the current recipe and show what's missing.
     }
 
@@ -188,7 +145,7 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
 
         if(allRequirements)
         {
-            StartCoroutine(PrepareGenerating());
+            StartCoroutine(PrepareBusy());
         }
     }
 
@@ -213,33 +170,11 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
 
     }
 
-    IEnumerator PrepareGenerating()
+    protected override void SetViewBusy()
     {
-        yield return new WaitForSeconds(0.1f);
-        if (_currentSpawnTime > 0)
-        {
-            Slot.enabled = true;
-            Slot.sprite = _gameController.GetItem(_currentRecipe.OutputItem)?.Icon;
-            Percent.gameObject.SetActive(true);
-            _elapsed = 0;
-            var color = Slot.color;
-            color.a = 0.5f;
-            Slot.enabled = true;
-            Slot.color = color;
-            SlotStatus = RecipeSlotStatus.Generating;
-        }
-        else
-        {
-            yield return PrepareReady();
-        }
-    }
+        base.SetViewBusy();
+        SlotContents.sprite = _gameController.GetItem(_currentRecipe.OutputItem)?.Icon;
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (_currentItem == null || _currentItem.InteractionType != InteractionType.Click)
-        {
-            return;
-        }
     }
 
     public bool SetActiveRecipe(Recipe recipeData, Item itemData)
@@ -251,9 +186,10 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
 
         _currentRecipe = recipeData;
         _currentRequirements.Clear();
-        Slot.sprite = null;
-        bool pickupPending = SlotStatus == RecipeSlotStatus.PickupPending;
-        SlotStatus = RecipeSlotStatus.AwaitingRequirements;
+        SlotContents.sprite = null;
+
+        bool pickupPending = _slotStatus == SlotStatus.ItemReady;
+        _slotStatus = SlotStatus.AwaitingRequirements;
         
         if (_currentItem != null && IsCurrentItemRequirementForRecipe(_currentRecipe))
         {
@@ -282,88 +218,11 @@ public class SlotRecipesBuilding : MonoBehaviour, IItemGenerator, IPointerClickH
         _gameController.DragItem(this, _currentItem, worldPos);
     }
 
-    public void DoDragStart(Vector2 pos)
+    protected override void DoClearContents()
     {
-        if(!_dragging)
-        {
-            _dragging = true;
-            Slot.sortingOrder += 100;
-            _dragStartPosition = Slot.transform.position;
-            Slot.transform.position = pos;
-        }
-    }
-
-    public void DoDragEnd(Vector2 pos)
-    {
-        if(_dragging)
-        {
-            Slot.sortingOrder -= 100;
-            _dragging = false;
-            Slot.transform.position = pos;
-        }
-    }
-
-    public void DoDrag(Vector2 pos)
-    {
-        if (_dragging)
-        {
-            Slot.transform.position = pos;
-        }
-    }
-
-    public bool ContainsPosition(Vector2 pos)
-    {
-        bool overlaps = CollisionArea.OverlapPoint(pos);
-        return overlaps;
-    }
-
-    public void ResetSlot()
-    {
-        Slot.transform.position = _dragStartPosition;        
-    }
-
-    public void ClearContents()
-    {
-        ResetSlot();
-        Slot.sprite = null;
-        SlotStatus = RecipeSlotStatus.AwaitingRequirements;
         _currentRecipe = null;
         _currentItem = null;
         _currentRequirements.Clear();
         _currentSpawnTime = 0;
     }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        if (_currentItem == null || _currentItem.InteractionType != InteractionType.Drag)
-        {
-            return;
-        }
-
-        if (!_dragging &&  SlotStatus != RecipeSlotStatus.Generating)
-        {
-            _dragging = true;
-            _dragStartPosition = Slot.transform.position;
-            Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
-            Slot.transform.position = worldPos;
-            _gameController.DragItemStart(this, _currentItem, worldPos);
-        }
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        if (_currentItem == null || _currentItem.InteractionType != InteractionType.Drag)
-        {
-            return;
-        }
-
-        if (_dragging)
-        {
-            _dragging = false;
-            Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Slot.transform.position = worldPos;
-            _gameController.DragItemEnd(this, _currentItem, worldPos);
-        }
-    }
-
 }

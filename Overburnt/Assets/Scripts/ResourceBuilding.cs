@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum SlotStatus
+public enum ResourceSlotStatus
 {
     PickupPending,
     Generating,
@@ -24,7 +24,7 @@ public class ResourceBuilding : MonoBehaviour
         GameController = gameController;
         foreach(var s in Slots)
         {
-            s.Init(this);
+            s.Init(GameController);
         }
         AvailableSlots = new List<SlotResourceBuilding>();
     }

@@ -123,7 +123,7 @@ Transform:
   m_Children:
   - {fileID: 2360997242559801301}
   m_Father: {fileID: 2729143522142713718}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &885243159685141255
 PrefabInstance:
@@ -203,26 +203,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 743b32a4fd18e1e46a6a4d56fb2fc0e4,
         type: 3}
-    - target: {fileID: 2964970642121346050, guid: dc679ec9659866a428f20ecd36059528,
-        type: 3}
-      propertyPath: m_Offset.y
-      value: 2.780994
-      objectReference: {fileID: 0}
-    - target: {fileID: 2964970642121346050, guid: dc679ec9659866a428f20ecd36059528,
-        type: 3}
-      propertyPath: m_Size.y
-      value: 5.4557276
-      objectReference: {fileID: 0}
-    - target: {fileID: 2964970642121346050, guid: dc679ec9659866a428f20ecd36059528,
-        type: 3}
-      propertyPath: m_Offset.x
-      value: 0.03860426
-      objectReference: {fileID: 0}
-    - target: {fileID: 2964970642121346050, guid: dc679ec9659866a428f20ecd36059528,
-        type: 3}
-      propertyPath: m_Size.x
-      value: 10.243209
-      objectReference: {fileID: 0}
     - target: {fileID: 5699563731498944330, guid: dc679ec9659866a428f20ecd36059528,
         type: 3}
       propertyPath: m_Offset.x
@@ -242,6 +222,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Size.y
       value: 1.7286234
+      objectReference: {fileID: 0}
+    - target: {fileID: 2964970642121346050, guid: dc679ec9659866a428f20ecd36059528,
+        type: 3}
+      propertyPath: m_Offset.y
+      value: 2.780994
+      objectReference: {fileID: 0}
+    - target: {fileID: 2964970642121346050, guid: dc679ec9659866a428f20ecd36059528,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 5.4557276
+      objectReference: {fileID: 0}
+    - target: {fileID: 2964970642121346050, guid: dc679ec9659866a428f20ecd36059528,
+        type: 3}
+      propertyPath: m_Offset.x
+      value: 0.03860426
+      objectReference: {fileID: 0}
+    - target: {fileID: 2964970642121346050, guid: dc679ec9659866a428f20ecd36059528,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 10.243209
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc679ec9659866a428f20ecd36059528, type: 3}
@@ -334,6 +334,16 @@ PrefabInstance:
       propertyPath: Slot
       value: 
       objectReference: {fileID: 9085934915048193420}
+    - target: {fileID: 6856402535761617970, guid: c0b737f432f46764c842ad2750e82a35,
+        type: 3}
+      propertyPath: SlotBG
+      value: 
+      objectReference: {fileID: 6165721471244120446}
+    - target: {fileID: 6856402535761617970, guid: c0b737f432f46764c842ad2750e82a35,
+        type: 3}
+      propertyPath: SlotContents
+      value: 
+      objectReference: {fileID: 9085934915048193420}
     - target: {fileID: 7103846422621508247, guid: c0b737f432f46764c842ad2750e82a35,
         type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -399,12 +409,6 @@ PrefabInstance:
       propertyPath: m_Size.x
       value: 4.6
       objectReference: {fileID: 0}
-    - target: {fileID: 1349306043847793506, guid: c0b737f432f46764c842ad2750e82a35,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: c0d76a4b6d575bf43be4203d96f461a9,
-        type: 3}
     - target: {fileID: 3804692988469709320, guid: c0b737f432f46764c842ad2750e82a35,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -474,6 +478,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: c0d76a4b6d575bf43be4203d96f461a9,
         type: 3}
+    - target: {fileID: 1349306043847793506, guid: c0b737f432f46764c842ad2750e82a35,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c0d76a4b6d575bf43be4203d96f461a9,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c0b737f432f46764c842ad2750e82a35, type: 3}
 --- !u!4 &2360997242559801301 stripped
@@ -494,3 +504,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ae654e5be2e3aa408bb5f24b4611a33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!212 &6165721471244120446 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 902036202092712332, guid: c0b737f432f46764c842ad2750e82a35,
+    type: 3}
+  m_PrefabInstance: {fileID: 6419219531222638834}
+  m_PrefabAsset: {fileID: 0}

@@ -26,7 +26,7 @@ public class RecipesBuilding : MonoBehaviour
         GameController = gameController;
         foreach(var slot in Slots)
         {
-            slot.Init(this);
+            slot.Init(GameController);
         }
         _activeSlots = new List<SlotRecipesBuilding>();
     }
@@ -40,7 +40,8 @@ public class RecipesBuilding : MonoBehaviour
             var slotInfo = info.Slots.Find(x => x.Slot == slot);
             if(slotInfo != null)
             {
-                slot.Load(slotInfo);
+                slot.ApplyOverrides(slotInfo);
+                slot.Load();
                 _activeSlots.Add(slot);
             }
             else
