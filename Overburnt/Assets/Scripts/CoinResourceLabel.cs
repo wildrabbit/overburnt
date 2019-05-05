@@ -16,7 +16,7 @@ public class CoinResourceLabel : MonoBehaviour
     {
         if(amount > 0)
         {
-            Label.color = LoseColour;
+            Label.color = AddColour;
             string amountText = $"{amount}";
             if(extra > 0)
             {
@@ -27,7 +27,7 @@ public class CoinResourceLabel : MonoBehaviour
         else
         {
             Label.color = LoseColour;
-            Label.text = $"-{amount}";
+            Label.text = $"{amount}";
         }
     }
 }

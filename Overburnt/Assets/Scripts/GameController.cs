@@ -158,8 +158,34 @@ public class GameController : MonoBehaviour
 
     [Header("Misc")]
     public float LevelResumeTime;
-    public Vector3 DragScaleOffset = new Vector3(1.3f, 1.3f, 1);
-    public Vector2 DragPosOffset = new Vector2(0.0f, 0.5f);
+    public Vector3 PCScaleOffset = new Vector3(1.3f, 1.3f, 1);
+    public Vector2 PCPosOffset = new Vector2(0.0f, 0.5f);
+    public Vector3 DeviceScaleOffset = new Vector3(1.3f, 1.3f, 1);
+    public Vector2 DevicePosOffset = new Vector2(0.0f, 0.5f);
+
+    public Vector3 DragScale
+    {
+        get
+        {
+#if UNITY_ANDROID && !UNITY_EDITOR
+            return DeviceScaleOffset;
+#else
+            return PCScaleOffset;
+#endif
+        }
+    }
+
+    public Vector2 DragOffset
+    {
+        get
+        {
+#if UNITY_ANDROID  && !UNITY_EDITOR
+            return DevicePosOffset;
+#else
+            return PCPosOffset;
+#endif
+        }
+    }
 
     bool _dragging;
     float _elapsedSinceLastDragFinished = -1;    
@@ -670,9 +696,11 @@ public class GameController : MonoBehaviour
             idx++;
         }
         float multiplier = EarningModifiers[idx].ExtraPercent;
-        float modifiedRevenue = revenue * multiplier;
+        int additionalRevenue = Mathf.FloorToInt(revenue * multiplier);
 
-        _revenue += Mathf.FloorToInt(modifiedRevenue);
+        OnClientRevenueAction?.Invoke(clientSlot, revenue, additionalRevenue);
+
+        _revenue += revenue + additionalRevenue;
         OnEarningsChanged?.Invoke(_revenue);
         _requestAllocations.Remove(clientSlot);
 
@@ -702,6 +730,8 @@ public class GameController : MonoBehaviour
         {
             _revenue = 0;
         }
+        OnClientRevenueAction?.Invoke(clientSlot, -revenue, 0);
+        OnEarningsChanged?.Invoke(_revenue);
 
         _numFailures++;
         _requestAllocations.Remove(clientSlot);

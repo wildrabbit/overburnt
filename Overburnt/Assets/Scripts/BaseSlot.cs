@@ -82,7 +82,7 @@ public abstract class BaseSlot : MonoBehaviour, IItemGenerator, IPointerClickHan
             return;
         }
 
-        SlotContents.transform.position = worldPos + _gameController.DragPosOffset;
+        SlotContents.transform.position = worldPos + _gameController.DragOffset;
         _gameController.DragItem(this, SlotItem, worldPos);
     }
 
@@ -212,8 +212,8 @@ public abstract class BaseSlot : MonoBehaviour, IItemGenerator, IPointerClickHan
         _dragStartPosition = SlotContents.transform.position;
         _dragStartScale = SlotContents.transform.localScale;
         Vector2 worldPos = eventData.pointerCurrentRaycast.worldPosition;
-        SlotContents.transform.localScale = _gameController.DragScaleOffset;
-        SlotContents.transform.position = worldPos + _gameController.DragPosOffset;
+        SlotContents.transform.localScale = _gameController.DragScale;
+        SlotContents.transform.position = worldPos + _gameController.DragOffset;
         _gameController.DragItemStart(this, SlotItem, worldPos);
     }
 
@@ -236,7 +236,7 @@ public abstract class BaseSlot : MonoBehaviour, IItemGenerator, IPointerClickHan
             SlotContents.sortingOrder -= 100;
             _draggingSlot = false;
             Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            SlotContents.transform.position = worldPos + _gameController.DragPosOffset;
+            SlotContents.transform.position = worldPos + _gameController.DragOffset;
 
             _gameController.DragItemEnd(this, SlotItem, worldPos);
         }

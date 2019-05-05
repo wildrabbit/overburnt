@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 using System;
 using System.Collections;
 
@@ -31,6 +32,7 @@ public class GameHUD : MonoBehaviour
     public TextMeshProUGUI _fatigue;
 
     public CoinResourceLabel _coinResourcePrefab;
+    public RectTransform _coinLabelsContainer;
 
     List<CoinResourceLabel> _coinInstances;
 
@@ -54,11 +56,16 @@ public class GameHUD : MonoBehaviour
     public GameObject GameBeaten;
     public GameObject GameBeatenInputHint;
 
-
+    Canvas _canvas;
+    Vector2 _scaleFactor;
 
     // Start is called before the first frame update
     void Awake()
     {
+        _canvas = GetComponent<Canvas>();
+        var canvasScaler = _canvas.GetComponent<CanvasScaler>();
+        _scaleFactor = new Vector2(canvasScaler.referenceResolution.x / Screen.width, canvasScaler.referenceResolution.y / Screen.height);
+
         _gameController.OnClientRevenueAction += ShowRevenueDelta;
         _gameController.OnEarningsChanged += RefreshIncome;
         _gameController.OnFatigueChanged += RefreshFatigue;
@@ -72,7 +79,21 @@ public class GameHUD : MonoBehaviour
 
     private void ShowRevenueDelta(ClientSlot clientSlot, int delta, int tipDelta)
     {
-        throw new NotImplementedException();
+        var coinInstance = Instantiate<CoinResourceLabel>(_coinResourcePrefab, _coinLabelsContainer);
+        var clientPos = Camera.main.WorldToScreenPoint(clientSlot.RequestRoot.transform.position);
+        clientPos.Scale(_scaleFactor);
+        var rectXfm = coinInstance.GetComponent<RectTransform>();
+        var coinGroup = coinInstance.GetComponent<CanvasGroup>();
+
+        coinInstance.SetAmount(delta, tipDelta);
+
+        coinGroup.alpha = 0.3f;
+        coinGroup.DOFade(1.0f, 0.5f);
+        rectXfm.anchoredPosition = clientPos;
+        rectXfm.localScale = Vector3.one * 0.3f;
+        rectXfm.DOAnchorPosY(rectXfm.anchoredPosition.y + 20.0f, 0.5f, true);
+        rectXfm.DOScale(1, 0.5f).OnComplete(() => Destroy(coinInstance.gameObject));
+
     }
 
     private void OnGameReady()
